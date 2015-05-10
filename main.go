@@ -5,6 +5,12 @@ import (
 )
 
 func main() {
+	geo := loadGeometry()
+	render(geo)
+
+}
+
+func loadGeometry() geometry {
 	top := polygon{
 			&vertex{-1, 1, -1},
 			&vertex{-1, 1, 1},
@@ -42,6 +48,16 @@ func main() {
 			&vertex{1, -1, -1},
 	}
 
-	box := geometry{&top, &front, &left, &right, &back, &bottom}
-	fmt.Println(box)
+	return geometry{
+			&top,
+			&front,
+			&left,
+			&right,
+			&back,
+			&bottom,
+	}
+}
+
+func render(g geometry) {
+	fmt.Println(g)
 }
