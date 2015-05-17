@@ -1,14 +1,14 @@
 package main
 
-type matrix struct {
+type matrix4 struct {
 	aa, ab, ac, ad float64
 	ba, bb, bc, bd float64
 	ca, cb, cc, cd float64
 	da, db, dc, dd float64
 }
 
-func IdentityMatrix() matrix {
-	return matrix {
+func IdentityMatrix4() matrix4 {
+	return matrix4{
 		1, 0, 0, 0,
 		0, 1, 0, 0,
 		0, 0, 1, 0,
@@ -16,8 +16,8 @@ func IdentityMatrix() matrix {
 	}
 }
 
-func (m matrix) Multiply(m2 matrix) matrix {
-	return matrix{
+func (m matrix4) Multiply(m2 matrix4) matrix4 {
+	return matrix4{
 		// row a
 		m.aa*m2.aa + m.ab*m2.ba + m.ac*m2.ca + m.ad*m2.da,
 		m.aa*m2.ab + m.ab*m2.bb + m.ac*m2.cb + m.ad*m2.db,

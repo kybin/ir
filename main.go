@@ -6,7 +6,7 @@ import (
 
 func main() {
 	geo := loadGeometry()
-	geo.Transform(IdentityMatrix())
+	geo.Transform(IdentityMatrix4())
 	render(geo)
 
 }
