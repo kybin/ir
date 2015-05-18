@@ -3,8 +3,7 @@ package main
 type vertex vector3
 
 func (v *vertex) Transform(m matrix4) {
-	vv := vector3{v.x, v.y, v.z}.Transform(m)
-	v =  &vertex{vv.x, vv.y, vv.z}
+	*v = vertex(vector3(*v).Transform(m))
 }
 
 type polygon []*vertex
