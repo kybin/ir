@@ -14,10 +14,13 @@ func (p polygon) Transform(m matrix4) {
 	}
 }
 
-type geometry []*polygon
+type geometry struct {
+	xform matrix4
+	prims []*polygon // TODO : nurbs, curve
+}
 
 func (g geometry) Transform(m matrix4) {
-	for _, p := range g {
+	for _, p := range g.prims {
 		p.Transform(m)
 	}
 }

@@ -2,16 +2,19 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 func main() {
 	geo := loadGeometry()
-	geo.Transform(IdentityMatrix4())
+	geo.Transform(geo.xform)
+	geo.xform = IdentityMatrix4()
 	render(geo)
-
 }
 
-func loadGeometry() geometry {
+func loadGeometry() *geometry {
+	geo := &geometry{}
+
 	top := polygon{
 			&vertex{-1, 1, -1},
 			&vertex{-1, 1, 1},
@@ -49,7 +52,14 @@ func loadGeometry() geometry {
 			&vertex{1, -1, -1},
 	}
 
-	return geometry{
+
+	geo.xform = matrix4{
+						math.Cos(pi/4), 0, -math.Sin(pi/4), 0,
+						0, 1, 0, 0,
+						math.Sin(pi/4), 0, math.Cos(pi/4), 0,
+						0, 0, 0, 1,
+	}
+	geo.prims = []*polygon{
 			&top,
 			&front,
 			&left,
@@ -57,8 +67,10 @@ func loadGeometry() geometry {
 			&back,
 			&bottom,
 	}
+
+	return geo
 }
 
-func render(g geometry) {
+func render(g *geometry) {
 	fmt.Println(g)
 }
