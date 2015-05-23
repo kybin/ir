@@ -16,7 +16,7 @@ func main() {
 	render(geo)
 }
 
-func loadGeometry() *geometry {
+func loadGeometry() geometry {
 	top := polygon{
 			&vertex{-1, 1, -1},
 			&vertex{-1, 1, 1},
@@ -54,7 +54,7 @@ func loadGeometry() *geometry {
 			&vertex{1, -1, -1},
 	}
 
-	return &geometry{
+	return geometry{
 			&top,
 			&front,
 			&left,
@@ -64,6 +64,6 @@ func loadGeometry() *geometry {
 	}
 }
 
-func render(g *geometry) {
+func render(g geometry) {
 	fmt.Println(g)
 }
