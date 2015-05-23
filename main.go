@@ -7,14 +7,16 @@ import (
 
 func main() {
 	geo := loadGeometry()
-	geo.Transform(geo.xform)
-	geo.xform = IdentityMatrix4()
+	geo.Transform(matrix4{
+						math.Cos(pi/4), 0, -math.Sin(pi/4), 0,
+						0, 1, 0, 0,
+						math.Sin(pi/4), 0, math.Cos(pi/4), 0,
+						1, -1, -4, 1,
+	})
 	render(geo)
 }
 
 func loadGeometry() *geometry {
-	geo := &geometry{}
-
 	top := polygon{
 			&vertex{-1, 1, -1},
 			&vertex{-1, 1, 1},
@@ -52,14 +54,7 @@ func loadGeometry() *geometry {
 			&vertex{1, -1, -1},
 	}
 
-
-	geo.xform = matrix4{
-						math.Cos(pi/4), 0, -math.Sin(pi/4), 0,
-						0, 1, 0, 0,
-						math.Sin(pi/4), 0, math.Cos(pi/4), 0,
-						0, 0, 0, 1,
-	}
-	geo.prims = []*polygon{
+	return &geometry{
 			&top,
 			&front,
 			&left,
@@ -67,8 +62,6 @@ func loadGeometry() *geometry {
 			&back,
 			&bottom,
 	}
-
-	return geo
 }
 
 func render(g *geometry) {
