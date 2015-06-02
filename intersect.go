@@ -12,8 +12,8 @@ type line2 struct {
 	start, end point2
 }
 
-// but what should I do if the slope is infinity? (l.end.x == l.start.x)
-// it still could have intersection point.
+// return line's slope and Y intercept.
+// if the slope is stiff, it may less correct.
 func slopeIntercept(l line2) (float64, float64) {
 	slope := (l.end.y - l.start.y) / (l.end.x - l.start.x)
 	intercept := l.start.y - slope*l.start.x
