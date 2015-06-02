@@ -35,3 +35,11 @@ func TestIntersect2(t *testing.T) {
 		t.Errorf("Intersection of %v and %v shold not have itersection. got %v", a, b, got)
 	}
 }
+
+func BenchmarkIntersect2(b *testing.B) {
+	l := line2{point2{0, -1}, point2{0, 1}}
+	ll := line2{point2{-1, 0}, point2{1, 0}}
+	for i := 0; i < b.N; i++ {
+		intersect2(l, ll)
+	}
+}
