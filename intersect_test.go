@@ -28,6 +28,17 @@ func TestIntersect2(t *testing.T) {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
+	a = line2{point2{0, 0}, point2{1, 0.5}}
+	b = line2{point2{1, 0}, point2{0.5, 1}}
+	got, ok = intersect2(a, b)
+	expect = point2{0.8, 0.4}
+	if !ok {
+		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
+	}
+	if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
+	}
+
 	a = line2{point2{2,1}, point2{3,3}}
 	b = line2{point2{2,-1}, point2{3,-3}}
 	got, ok = intersect2(a, b)
