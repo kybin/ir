@@ -12,8 +12,7 @@ func TestIntersect2(t *testing.T) {
 	expect := point2{0.5, 0.5}
 	if !ok {
 		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
-	}
-	if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+	} else if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
@@ -23,8 +22,7 @@ func TestIntersect2(t *testing.T) {
 	expect = point2{0, 0}
 	if !ok {
 		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
-	}
-	if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+	} else  if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
@@ -34,8 +32,7 @@ func TestIntersect2(t *testing.T) {
 	expect = point2{0.8, 0.4}
 	if !ok {
 		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
-	}
-	if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+	} else if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
@@ -45,8 +42,7 @@ func TestIntersect2(t *testing.T) {
 	expect = point2{-1, 1.8}
 	if !ok {
 		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
-	}
-	if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+	} else if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
