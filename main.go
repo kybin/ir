@@ -62,40 +62,40 @@ func main() {
 
 func loadGeometry() geometry {
 	top := polygon{
-			&vertex{-1, 1, -1},
-			&vertex{-1, 1, 1},
-			&vertex{1, 1, 1},
-			&vertex{1, 1, -1},
+			NewVertex(-1, 1, -1),
+			NewVertex(-1, 1, 1),
+			NewVertex(1, 1, 1),
+			NewVertex(1, 1, -1),
 	}
 	front := polygon{
-			&vertex{-1, -1, 1},
-			&vertex{-1, 1, 1},
-			&vertex{1, 1, 1},
-			&vertex{1, -1, 1},
+			NewVertex(-1, -1, 1),
+			NewVertex(-1, 1, 1),
+			NewVertex(1, 1, 1),
+			NewVertex(1, -1, 1),
 	}
 	left := polygon{
-			&vertex{1, -1, -1},
-			&vertex{1, -1, 1},
-			&vertex{1, 1, 1},
-			&vertex{1, 1, -1},
+			NewVertex(1, -1, -1),
+			NewVertex(1, -1, 1),
+			NewVertex(1, 1, 1),
+			NewVertex(1, 1, -1),
 	}
 	right := polygon{
-			&vertex{-1, -1, -1},
-			&vertex{-1, -1, 1},
-			&vertex{-1, 1, 1},
-			&vertex{-1, 1, -1},
+			NewVertex(-1, -1, -1),
+			NewVertex(-1, -1, 1),
+			NewVertex(-1, 1, 1),
+			NewVertex(-1, 1, -1),
 	}
 	back := polygon{
-			&vertex{-1, -1, -1},
-			&vertex{-1, 1, -1},
-			&vertex{1, 1, -1},
-			&vertex{1, -1, -1},
+			NewVertex(-1, -1, -1),
+			NewVertex(-1, 1, -1),
+			NewVertex(1, 1, -1),
+			NewVertex(1, -1, -1),
 	}
 	bottom := polygon{
-			&vertex{-1, -1, -1},
-			&vertex{-1, -1, 1},
-			&vertex{1, -1, 1},
-			&vertex{1, -1, -1},
+			NewVertex(-1, -1, -1),
+			NewVertex(-1, -1, 1),
+			NewVertex(1, -1, 1),
+			NewVertex(1, -1, -1),
 	}
 
 	return geometry{

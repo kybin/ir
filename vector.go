@@ -19,17 +19,6 @@ func (v vector3) Equal(v2 vector3) bool {
 	return false
 }
 
-func (v vector3) Transform(m matrix4) vector3 {
-	a := v.x
-	b := v.y
-	c := v.z
-	return vector3{
-		a*m.aa + b*m.ba + c*m.ca,
-		a*m.ab + b*m.bb + c*m.cb,
-		a*m.ac + b*m.bc + c*m.cc,
-	}
-}
-
 func (v vector3) Translate(v2 vector3) vector3 {
 	return vector3{
 		v.x + v2.x,
@@ -86,3 +75,8 @@ func (v vector3) RotateZ(theta float64) vector3 {
 		v.z,
 	}
 }
+
+type vector4 struct {
+	x, y, z, w float64
+}
+
