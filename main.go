@@ -42,7 +42,7 @@ func main() {
 						cam.right.z, cam.up.z, cam.front.z, 0,
 						0, 0, 0, 1,
 	}
-	viewTransform := viewRotation.Multiply(viewTranslation)
+	viewTransform := viewTranslation.Multiply(viewRotation)
 
 	// perspective projection
 	// http://ogldev.atspace.co.uk/www/tutorial12/tutorial12.html
