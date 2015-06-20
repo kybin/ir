@@ -7,7 +7,7 @@ import (
 
 func main() {
 	geo := loadGeometry()
-	modelTransform = matrix4{
+	modelTransform := matrix4{
 						math.Cos(pi/4), 0, -math.Sin(pi/4), 0,
 						0, 1, 0, 0,
 						math.Sin(pi/4), 0, math.Cos(pi/4), 0,
@@ -22,19 +22,23 @@ func main() {
 	// assume camera axis are already normalized.
 	//
 	// TODO : redefine camera.
-	cam = &camera{
-					pos : vector3{10,10,10},
-					target : vector3{0,0,0},
-					up : vector3{0,1,0}, // TODO : perpendicular to front.
-					near : 0.1,
+	cam := &camera{
+					P : vector3{0, 0, 5},
+					front : vector3{0, 0, -1},
+					right : vector3{-1, 0, 0},
+					up : vector3{0, 1, 0},
+					focal : 50,
+					aptx : 41.4214,
+					resx : 1920,
+					resy : 1280,
+					near : 0.001,
 					far : 10000,
-					aperture : 1920/1080,
 	}
 	viewTranslation := matrix4{
 						1, 0, 0, 0,
 						0, 1, 0, 0,
 						0, 0, 1, 0,
-						-cam.pos.x, -cam.pos.y, -cam.pos.z, 1,
+						-cam.P.x, -cam.P.y, -cam.P.z, 1,
 	}
 	viewRotation := matrix4{
 						cam.right.x, cam.up.x, cam.front.x, 0,
@@ -47,8 +51,8 @@ func main() {
 	// perspective projection
 	// http://ogldev.atspace.co.uk/www/tutorial12/tutorial12.html
 	perspProjection := matrix4{
-						1 / (math.Tan(cam.FOV/2) * ar), 0, 0, 0,
-						0, 1 / math.Tan(cam.Fov/2), 0, 0, 0,
+						1 / cam.Apty(), 0, 0, 0,
+						0, 1 / cam.aptx, 0, 0,
 						0, 0, (-cam.near - cam.far) / (cam.near - cam.far), 2 * cam.far *cam.near / (cam.near - cam.far),
 						0, 0, 1, 0,
 	}

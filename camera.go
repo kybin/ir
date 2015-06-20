@@ -4,28 +4,22 @@ import (
 	"math"
 )
 
-// code here is shamelessly copied from
+// ref
 // http://www.sidefx.com/docs/houdini14.0/ref/cameralenses
 
 type camera struct {
+	P vector3
+	front, right, up vector3
 	focal float64
-	apx float64
+	aptx float64 // aperture x
 	resx, resy float64
-	asp float64
+	near, far float64
 }
 
-func NewCamera(focal, apx, resx, resy, asp float64) *camera {
-	return &camera{focal, apx, resx, resy, asp}
+func (c *camera) Apty() float64 {
+	return (c.resy / c.resx) * c.aptx
 }
 
-func (c *camera) Aperture() (float64, float64) {
-	apy := (c.resy*c.apx) / (c.resx*c.asp)
-	return c.apx, apy
-}
-
-func (c *camera) FOV() (float64, float64) {
-	apx, apy := c.Aperture()
-	fovx := 2 * math.Atan((apx/2) / c.focal)
-	fovy := 2 * math.Atan((apy/2) / c.focal)
-	return fovx, fovy
+func (c *camera) FOV() float64 {
+	return 2 * math.Atan((c.Apty()/2) / c.focal)
 }
