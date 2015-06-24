@@ -25,7 +25,7 @@ func (v vector3) Len() float64 {
 
 func (v vector3) Normalize() vector3 {
 	l := v.Len()
-	return vector3{v.x/l, v.y/l, v.z/l}
+	return vector3{v.x / l, v.y / l, v.z / l}
 }
 
 func (v vector3) Neg() vector3 {
@@ -45,41 +45,41 @@ func (v vector3) Cross(v2 vector3) vector3 {
 }
 
 func (v vector3) Add(v2 vector3) vector3 {
-	return vector3{v.x+v2.x, v.y+v2.y, v.z+v2.z}
+	return vector3{v.x + v2.x, v.y + v2.y, v.z + v2.z}
 }
 
 func (v vector3) Sub(v2 vector3) vector3 {
-	return vector3{v.x-v2.x, v.y-v2.y, v.z-v2.z}
+	return vector3{v.x - v2.x, v.y - v2.y, v.z - v2.z}
 }
 
 func (v vector3) Mult(f float64) vector3 {
-	return vector3{v.x*f, v.y*f, v.z*f}
+	return vector3{v.x * f, v.y * f, v.z * f}
 }
 
 func (v vector3) Div(f float64) vector3 {
-	return vector3{v.x/f, v.y/f, v.z/f}
+	return vector3{v.x / f, v.y / f, v.z / f}
 }
 
 func (v vector3) Rotate(rx, ry, rz float64, unit, order string) vector3 {
 	switch unit {
-		case "radian":
-		case "angle":
-			rx = rx/180*pi
-			ry = ry/180*pi
-			rz = rz/180*pi
-		default:
-			panic("unknown unit")
+	case "radian":
+	case "angle":
+		rx = rx / 180 * pi
+		ry = ry / 180 * pi
+		rz = rz / 180 * pi
+	default:
+		panic("unknown unit")
 	}
 	for _, ord := range order {
 		switch ord {
-			case 'x':
-				v = v.RotateX(rx)
-			case 'y':
-				v = v.RotateY(ry)
-			case 'z':
-				v = v.RotateZ(rz)
-			default:
-				panic("unknown order")
+		case 'x':
+			v = v.RotateX(rx)
+		case 'y':
+			v = v.RotateY(ry)
+		case 'z':
+			v = v.RotateZ(rz)
+		default:
+			panic("unknown order")
 		}
 	}
 	return v
@@ -112,4 +112,3 @@ func (v vector3) RotateZ(theta float64) vector3 {
 type vector4 struct {
 	x, y, z, w float64
 }
-

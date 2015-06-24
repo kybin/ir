@@ -17,7 +17,7 @@ type quaternion struct {
 }
 
 func (q quaternion) Len() float64 {
-	return math.Sqrt(q.v.x * q.v.x + q.v.y * q.v.y + q.v.z * q.v.z + q.w * q.w)
+	return math.Sqrt(q.v.x*q.v.x + q.v.y*q.v.y + q.v.z*q.v.z + q.w*q.w)
 }
 
 func (q quaternion) Normalize() quaternion {
@@ -30,7 +30,7 @@ func (q quaternion) Neg() quaternion {
 }
 
 func (q quaternion) Dot(q2 quaternion) float64 {
-	return q.v.Dot(q2.v) + q.w * q2.w
+	return q.v.Dot(q2.v) + q.w*q2.w
 }
 
 func (q quaternion) Add(q2 quaternion) quaternion {
