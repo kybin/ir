@@ -5,12 +5,19 @@ import (
 )
 
 func TestTransform(t *testing.T) {
-	v := &vertex{1,0,0}
+	v := NewVertex(1, 0, 0)
 	g := &geometry{&polygon{v}}
-	g.Transform(matrix4{0,1,0,0, 1,0,0,0, 0,0,1,0, 0,0,0,1})
-	expect := vertex{0,1,0}
+
+	tr := matrix4{
+		0, 1, 0, 0,
+		1, 0, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}
+	g.Transform(tr)
+
+	expect := vertex{0, 1, 0, 1}
 	if *v != expect {
 		t.Errorf("Vertex does not move properly. expect:%v, got:%v", expect, *v)
 	}
 }
-
