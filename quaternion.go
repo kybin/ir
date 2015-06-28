@@ -29,6 +29,14 @@ func (q quaternion) Neg() quaternion {
 	return quaternion{q.v.Neg(), -q.w}
 }
 
+func (q quaternion) Equal(q2 quaternion) bool {
+	ig := ignorable
+	if q.v.Equal(q2.v) && math.Abs(q.w-q2.w) < ig {
+		return true
+	}
+	return false
+}
+
 func (q quaternion) Dot(q2 quaternion) float64 {
 	return q.v.Dot(q2.v) + q.w*q2.w
 }
@@ -61,6 +69,6 @@ func Slerp(q, q2 quaternion, t float64) quaternion {
 	} else {
 		animTh := math.Acos(cosTh) * t
 		qPerpn := q2.Sub(q.Mult(cosTh))
-		return q.Mult(math.Cos(animTh)).Add(qPerpn.Mult(animTh))
+		return q.Mult(math.Cos(animTh)).Add(qPerpn.Mult(math.Sin(animTh)))
 	}
 }
