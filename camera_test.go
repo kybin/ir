@@ -6,18 +6,28 @@ import (
 )
 
 func TestCamera(t *testing.T) {
-	cam := NewCamera(50, 41.4214, 320, 243, 1)
+	cam := camera{
+					P : vector3{0,0,0},
+					front : vector3{0,0,1},
+					right : vector3{1,0,0},
+					up : vector3{0,1,0},
+					focal : 50,
+					aptx : 41.4214,
+					resx : 320,
+					resy : 243,
+					near : 0.0001,
+					far : 10000,
+	}
 	// aperture
-	expx, expy := 41.4214, 31.454375625
-	gotx, goty := cam.Aperture()
-	ign := 0.0001
-	if math.Abs(expx - gotx) > ign || math.Abs(expy - goty) > ign {
-		t.Errorf("camera's aperture not matched. expect:%v,%v got:%v,%v", expx, expy, gotx, goty)
+	exp := 31.454376
+	got := cam.Apty()
+	if math.Abs(exp - got) > 0.0001 {
+		t.Errorf("camera's Y-aperture not matched. expect:%v, got:%v", exp, got)
 	}
 	// fov
-	expx, expy = 0.7853989104731898, 0.6094914217849252
-	gotx, goty = cam.FOV()
-	if math.Abs(expx - gotx) > ign || math.Abs(expy - goty) > ign {
-		t.Errorf("camera's fov not matched. expect:%v,%v got:%v,%v", expx, expy, gotx, goty)
+	exp = 0.609491
+	got = cam.FOV()
+	if math.Abs(exp - got) > 0.0001 {
+		t.Errorf("camera's fov not matched. expect:%v, got:%v", exp, got)
 	}
 }
