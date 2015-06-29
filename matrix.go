@@ -16,6 +16,15 @@ func IdentityMatrix4() matrix4 {
 	}
 }
 
+func (m matrix4) Transpose() matrix4 {
+	return matrix4{
+		m.aa, m.ba, m.ca, m.da,
+		m.ab, m.bb, m.cb, m.db,
+		m.ac, m.bc, m.cc, m.dc,
+		m.ad, m.bd, m.cd, m.dd,
+	}
+}
+
 func (m matrix4) Multiply(m2 matrix4) matrix4 {
 	return matrix4{
 		// row a
