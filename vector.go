@@ -4,6 +4,10 @@ import (
 	"math"
 )
 
+type vector2 struct {
+	x, y float64
+}
+
 type vector3 struct {
 	x, y, z float64
 }

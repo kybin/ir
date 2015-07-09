@@ -71,9 +71,7 @@ func main() {
 	//	0, 0, 1, 0,
 	//}
 
-	// geo.Transform(perspProjection.Multiply(viewTransform.Multiply(modelTransform)))
-
-	render(geo)
+	debug(geo)
 }
 
 func loadGeometry() geometry {
@@ -124,7 +122,8 @@ func loadGeometry() geometry {
 	}
 }
 
-func render(g geometry) {
+
+func debug(g geometry) {
 	fmt.Println(g)
 	for _, p := range g {
 		for _, v := range *p {
