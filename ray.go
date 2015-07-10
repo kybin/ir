@@ -17,8 +17,8 @@ func (r *ray) Hit(g *geometry) bool {
 	for _, p := range *g {
 		// check if the pt is place outside of bound.
 		bb := p.BBox()
-		if !(bb.min.x <= pt.x && pt.x <= bb.max.x && bb.min.y <= pt.y && pt.y <= bb.max.y) {
-			return false
+		if !((bb.min.x <= pt.x && pt.x <= bb.max.x) && (bb.min.y <= pt.y && pt.y <= bb.max.y)) {
+			continue
 		}
 		switch len(*p) {
 		case 3:
@@ -34,7 +34,7 @@ func (r *ray) Hit(g *geometry) bool {
 			if !(l.Intersect(a) || l.Intersect(b) || l.Intersect(c)) {
 				return true
 			}
-			return false
+			continue
 		case 4:
 			// divide the square to 2 triangles. then we can use above (triangle) approach.
 			// if any triangle contains the point, it means the square contains the point.
@@ -47,7 +47,7 @@ func (r *ray) Hit(g *geometry) bool {
 			if !(l.Intersect(a) || l.Intersect(b) || l.Intersect(c)) {
 				return true
 			}
-			ct = (&polygon{(*p)[0], (*p)[2], (*p)[3]}).Center()
+			ct = (&polygon{pp[0], pp[2], pp[3]}).Center()
 			l = line2{vector2{ct.x, ct.y}, pt}
 			a = line2{vector2{pp[0].x, pp[0].y}, vector2{pp[2].x, pp[2].y}}
 			b = line2{vector2{pp[2].x, pp[2].y}, vector2{pp[3].x, pp[3].y}}
@@ -55,7 +55,7 @@ func (r *ray) Hit(g *geometry) bool {
 			if !(l.Intersect(a) || l.Intersect(b) || l.Intersect(c)) {
 				return true
 			}
-			return false
+			continue
 		default:
 			panic("n-gon not supported yet.")
 		}

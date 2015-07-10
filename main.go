@@ -71,10 +71,10 @@ func main() {
 	//	0, 0, 1, 0,
 	//}
 
-	debug(geo)
+	render(cam, geo)
 }
 
-func loadGeometry() geometry {
+func loadGeometry() *geometry {
 	top := polygon{
 		NewVertex(-1, 1, -1),
 		NewVertex(-1, 1, 1),
@@ -112,7 +112,7 @@ func loadGeometry() geometry {
 		NewVertex(1, -1, -1),
 	}
 
-	return geometry{
+	return &geometry{
 		&back,
 		&left,
 		&front,
@@ -123,9 +123,9 @@ func loadGeometry() geometry {
 }
 
 
-func debug(g geometry) {
-	fmt.Println(g)
-	for _, p := range g {
+func debug(g *geometry) {
+	fmt.Println(*g)
+	for _, p := range *g {
 		for _, v := range *p {
 			fmt.Println(*v)
 		}

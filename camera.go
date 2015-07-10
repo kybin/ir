@@ -12,12 +12,12 @@ type camera struct {
 	front, right, up vector3
 	focal float64
 	aptx float64 // aperture x
-	resx, resy float64
+	resx, resy int
 	near, far float64
 }
 
 func (c *camera) Apty() float64 {
-	return (c.resy / c.resx) * c.aptx
+	return float64(c.resy) / float64(c.resx) * c.aptx
 }
 
 func (c *camera) FOV() float64 {
