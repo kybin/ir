@@ -24,11 +24,25 @@ func (a line2) Intersect(b line2) bool {
 		b.start.x, b.start.y = b.start.y, b.start.x
 		b.end.x, b.end.y = b.end.y, b.end.x
 	}
+	if a.start.x > a.end.x {
+		a.start, a.end = a.end, a.start
+	}
+	if b.start.x > b.end.x {
+		b.start, b.end = b.end, b.start
+	}
+	// we are interested in the 'common' parts.
+	if a.start.x > b.end.x || b.start.x > a.end.x {
+		return false
+	}
+	startx := max(a.start.x, b.start.x)
+	endx := min(a.end.x, b.end.x)
 	sa, ia := a.SlopeIntercept()
 	// shear b to y direction.
 	b.start.y = b.start.y - (sa * b.start.x) - ia
 	b.end.y = b.end.y - (sa * b.end.x) - ia
-	if math.Signbit(b.start.y) == math.Signbit(b.end.y) {
+	starty := mix(b.start.y, b.end.y, (startx-b.start.x) / (b.end.x-b.start.x))
+	endy := mix(b.start.y, b.end.y, (endx-b.start.x) / (b.end.x-b.start.x))
+	if math.Signbit(starty) == math.Signbit(endy) {
 		return false
 	}
 	return true

@@ -49,9 +49,9 @@ func (r *ray) Hit(g *geometry) bool {
 			}
 			ct = (&polygon{(*p)[0], (*p)[2], (*p)[3]}).Center()
 			l = line2{vector2{ct.x, ct.y}, pt}
-			a = line2{vector2{pp[0].x, pp[0].y}, vector2{pp[1].x, pp[1].y}}
-			b = line2{vector2{pp[1].x, pp[1].y}, vector2{pp[2].x, pp[2].y}}
-			c = line2{vector2{pp[2].x, pp[2].y}, vector2{pp[0].x, pp[0].y}}
+			a = line2{vector2{pp[0].x, pp[0].y}, vector2{pp[2].x, pp[2].y}}
+			b = line2{vector2{pp[2].x, pp[2].y}, vector2{pp[3].x, pp[3].y}}
+			c = line2{vector2{pp[3].x, pp[3].y}, vector2{pp[0].x, pp[0].y}}
 			if !(l.Intersect(a) || l.Intersect(b) || l.Intersect(c)) {
 				return true
 			}

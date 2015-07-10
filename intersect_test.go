@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func TestIntersect2(t *testing.T) {
+func TestIntersectPoint(t *testing.T) {
 	a := line2{vector2{0, 0}, vector2{1, 1}}
 	b := line2{vector2{-1, 0}, vector2{2, 1}}
 	got, ok := a.IntersectPoint(b)
@@ -52,9 +52,38 @@ func TestIntersect2(t *testing.T) {
 	if ok {
 		t.Errorf("Intersection of %v and %v shold not have itersection. got %v", a, b, got)
 	}
+
 }
 
-func BenchmarkIntersect2(b *testing.B) {
+func TestIntersect(t *testing.T) {
+	a := line2{vector2{0.66, 0.33}, vector2{0.2, 0.3}}
+	b := line2{vector2{0, 0}, vector2{1, 1}}
+	if !a.Intersect(b) {
+		t.Errorf("%v and %v shold intersect. got no intersect", a, b)
+	}
+	a = line2{vector2{0.33, 0.66}, vector2{0.2, 0.3}}
+	b = line2{vector2{0, 0}, vector2{0, 1}}
+	if a.Intersect(b) {
+		t.Errorf("%v and %v shold not intersect. got intersect", a, b)
+	}
+	a = line2{vector2{0.33, 0.66}, vector2{0.2, 0.3}}
+	b = line2{vector2{1, 1}, vector2{0, 0}}
+	if a.Intersect(b) {
+		t.Errorf("%v and %v should not itersect. got intersect", a, b)
+	}
+	a = line2{vector2{0.33, 0.66}, vector2{0.2, 0.3}}
+	b = line2{vector2{0, 1}, vector2{1, 1}}
+	if a.Intersect(b) {
+		t.Errorf("%v and %v shold not intersect. got intersect", a, b)
+	}
+	a = line2{vector2{0.66, 0.33}, vector2{0.2, 0.3}}
+	b = line2{vector2{1, 1}, vector2{1, 0}}
+	if a.Intersect(b) {
+		t.Errorf("%v and %v shold not intersect. got intersect", a, b)
+	}
+}
+
+func BenchmarkIntersect(b *testing.B) {
 	l := line2{vector2{0, -1}, vector2{0, 1}}
 	ll := line2{vector2{-1, 0}, vector2{1, 0}}
 	for i := 0; i < b.N; i++ {
