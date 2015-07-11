@@ -30,7 +30,7 @@ func render(c *camera, g *geometry) {
 			if r.Hit(g) {
 				img.Set(px, py, color.RGBA{255, 255, 255, 255})
 			} else {
-				img.Set(px, py, color.RGBA{0, 0, 0, 0})
+				img.Set(px, py, color.RGBA{0, 0, 0, 255})
 			}
 		}
 	}
