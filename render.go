@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"math/rand"
 )
 
 func render(c *camera, g *geometry) {
@@ -16,6 +17,10 @@ func render(c *camera, g *geometry) {
 			*v = vertex{v.x / v.z, v.y / v.z, 1, 1}
 		}
 	}
+	dx := c.aptx / float64(c.resx)
+	dy := c.Apty() / float64(c.resy)
+	rnd := rand.New(rand.NewSource(99))
+	nsample := 9
 	f, err := os.Create("hello.png")
 	if err != nil {
 		panic("cannot generate image file.")
@@ -26,12 +31,15 @@ func render(c *camera, g *geometry) {
 		for px := 0; px < c.resx; px++ {
 			x := mix(-c.aptx/2, c.aptx/2, float64(px)/float64(c.resx))
 			y := mix(c.Apty()/2, -c.Apty()/2, float64(py)/float64(c.resy))
-			r := &ray{vector3{x, y, c.focal}}
-			if r.Hit(g) {
-				img.Set(px, py, color.RGBA{255, 255, 255, 255})
-			} else {
-				img.Set(px, py, color.RGBA{0, 0, 0, 255})
+			var cl float64
+			for i := 0; i < nsample; i++ {
+				r := &ray{vector3{x + dx * rnd.Float64(), y + dy * rnd.Float64(), c.focal}}
+				if r.Hit(g) {
+					cl += 1
+				}
 			}
+			cl /= float64(nsample)
+			img.Set(px, py, color.RGBA{uint8(255*cl), uint8(255*cl), uint8(255*cl), 255})
 		}
 	}
 	err = png.Encode(f, img)
