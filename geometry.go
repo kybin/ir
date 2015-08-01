@@ -5,16 +5,18 @@ type vertex struct {
 	w float64
 	v3a map[string]vector3
 	fa map[string]float64
+	parent *polygon
 }
 
-func NewVertex(x, y, z float64) *vertex {
+func NewVertex(P vector3) *vertex {
 	v3a := make(map[string]vector3)
 	fa := make(map[string]float64)
 	return &vertex{
-		P: vector3{x, y, z},
+		P: P,
 		w: 1,
 		v3a: v3a,
 		fa: fa,
+		parent: nil, // set when contained to polygon.
 	}
 }
 
@@ -32,6 +34,14 @@ func (v *vertex) Transform(m matrix4) {
 	v.w = x*m.da + y*m.db + z*m.dc + w*m.dd
 }
 
+func (v *vertex) Normal() vector3 {
+	if v.parent == nil {
+		return vector3{0, 0, 0}
+	}
+	val, _ := v.parent.v3a["N"]
+	return val
+}
+
 type polygon struct {
 	vts []*vertex
 	v3a map[string]vector3
@@ -41,11 +51,15 @@ type polygon struct {
 func NewPolygon(vts ...*vertex) *polygon {
 	v3a := make(map[string]vector3)
 	fa := make(map[string]float64)
-	return &polygon{
+	ply := &polygon{
 		vts: vts,
 		v3a: v3a,
 		fa: fa,
 	}
+	for _, v := range vts {
+		v.parent = ply
+	}
+	return ply
 }
 
 func (p *polygon) Transform(m matrix4) {
@@ -67,8 +81,8 @@ func (p *polygon) CalculateNormal() {
 	case 0, 1, 2:
 		return
 	default:
-		v1 := vts[1].Pos().Sub(vts[0].Pos()).Normalize()
-		v2 := vts[2].Pos().Sub(vts[1].Pos()).Normalize()
+		v1 := vts[1].P.Sub(vts[0].P).Normalize()
+		v2 := vts[2].P.Sub(vts[1].P).Normalize()
 		p.v3a["N"] = v1.Cross(v2).Normalize()
 	}
 }
@@ -92,9 +106,9 @@ func (p *polygon) BBox() bbox3 {
 	case 0:
 		return bbox3{vector3{0, 0, 0}, vector3{0, 0, 0}}
 	case 1:
-		return bbox3{p.vts[0].Pos(), p.vts[0].Pos()}
+		return bbox3{p.vts[0].P, p.vts[0].P}
 	default:
-		min := p.vts[0].Pos()
+		min := p.vts[0].P
 		max := min
 		for _, v := range p.vts[1:] {
 			x := v.P.x
@@ -122,8 +136,14 @@ func (p *polygon) BBox() bbox3 {
 
 type geometry []*polygon // TODO : nurbs, curve
 
-func (g geometry) Transform(m matrix4) {
-	for _, p := range g {
+func (g *geometry) Transform(m matrix4) {
+	for _, p := range *g {
 		p.Transform(m)
+	}
+}
+
+func (g *geometry) CalculateNormal() {
+	for _, p := range *g {
+		p.CalculateNormal()
 	}
 }

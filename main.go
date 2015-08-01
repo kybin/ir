@@ -60,6 +60,7 @@ func main() {
 
 
 	geo.Transform(viewTransform.Multiply(modelTransform))
+	geo.CalculateNormal()
 
 	// TODO : do I need perspective projection in pbr renderer?
 	// perspective projection
@@ -71,45 +72,49 @@ func main() {
 	//	0, 0, 1, 0,
 	//}
 
-	render(cam, geo)
+	lit := &dirlight{dir:vector3{-0.5, -1, 0}.Normalize()}
+
+	scn := &scene{cam, geo, lit}
+
+	render(scn)
 }
 
 func loadGeometry() *geometry {
 	top := NewPolygon(
-		NewVertex(-1, 1, -1),
-		NewVertex(-1, 1, 1),
-		NewVertex(1, 1, 1),
-		NewVertex(1, 1, -1),
+		NewVertex(vector3{-1, 1, -1}),
+		NewVertex(vector3{-1, 1, 1}),
+		NewVertex(vector3{1, 1, 1}),
+		NewVertex(vector3{1, 1, -1}),
 	)
 	front := NewPolygon(
-		NewVertex(-1, -1, 1),
-		NewVertex(-1, 1, 1),
-		NewVertex(1, 1, 1),
-		NewVertex(1, -1, 1),
+		NewVertex(vector3{-1, -1, 1}),
+		NewVertex(vector3{-1, 1, 1}),
+		NewVertex(vector3{1, 1, 1}),
+		NewVertex(vector3{1, -1, 1}),
 	)
 	left := NewPolygon(
-		NewVertex(1, -1, -1),
-		NewVertex(1, -1, 1),
-		NewVertex(1, 1, 1),
-		NewVertex(1, 1, -1),
+		NewVertex(vector3{1, -1, -1}),
+		NewVertex(vector3{1, -1, 1}),
+		NewVertex(vector3{1, 1, 1}),
+		NewVertex(vector3{1, 1, -1}),
 	)
 	right := NewPolygon(
-		NewVertex(-1, -1, -1),
-		NewVertex(-1, -1, 1),
-		NewVertex(-1, 1, 1),
-		NewVertex(-1, 1, -1),
+		NewVertex(vector3{-1, -1, -1}),
+		NewVertex(vector3{-1, -1, 1}),
+		NewVertex(vector3{-1, 1, 1}),
+		NewVertex(vector3{-1, 1, -1}),
 	)
 	back := NewPolygon(
-		NewVertex(-1, -1, -1),
-		NewVertex(-1, 1, -1),
-		NewVertex(1, 1, -1),
-		NewVertex(1, -1, -1),
+		NewVertex(vector3{-1, -1, -1}),
+		NewVertex(vector3{-1, 1, -1}),
+		NewVertex(vector3{1, 1, -1}),
+		NewVertex(vector3{1, -1, -1}),
 	)
 	bottom := NewPolygon(
-		NewVertex(-1, -1, -1),
-		NewVertex(-1, -1, 1),
-		NewVertex(1, -1, 1),
-		NewVertex(1, -1, -1),
+		NewVertex(vector3{-1, -1, -1}),
+		NewVertex(vector3{-1, -1, 1}),
+		NewVertex(vector3{1, -1, 1}),
+		NewVertex(vector3{1, -1, -1}),
 	)
 
 	return &geometry{
