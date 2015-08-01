@@ -19,9 +19,6 @@ func (v *vertex) Transform(m matrix4) {
 	}
 }
 
-// Note :
-//  some polygon methods will panic if polygon has no vertex.
-//  how to avoid it? (polygon should have vertex?)
 type polygon []*vertex
 
 func (p *polygon) Transform(m matrix4) {
@@ -30,13 +27,29 @@ func (p *polygon) Transform(m matrix4) {
 	}
 }
 
-func (p *polygon) Center() vector3 {
-	center := (*p)[0].Position()
-	for _, v := range (*p)[1:] {
-		center = center.Add(v.Position())
+func (p *polygon) Normal() vector3 {
+	switch len(*p) {
+	case 0, 1, 2:
+		return vector3{0, 0, 0}
+	default:
+		v1 := (*p)[1].Position().Sub((*p)[0].Position()).Normalize()
+		v2 := (*p)[2].Position().Sub((*p)[1].Position()).Normalize()
+		return v1.Cross(v2).Normalize()
 	}
-	center = center.Div(float64(len(*p)))
-	return center
+}
+
+func (p *polygon) Center() vector3 {
+	switch len(*p) {
+	case 0:
+		return vector3{0, 0, 0}
+	default:
+		center := vector3{0, 0, 0}
+		for _, v := range (*p) {
+			center = center.Add(v.Position())
+		}
+		center = center.Div(float64(len(*p)))
+		return center
+	}
 }
 
 func (p *polygon) BBox() bbox3 {
