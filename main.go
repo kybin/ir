@@ -75,59 +75,57 @@ func main() {
 }
 
 func loadGeometry() *geometry {
-	top := polygon{
+	top := NewPolygon(
 		NewVertex(-1, 1, -1),
 		NewVertex(-1, 1, 1),
 		NewVertex(1, 1, 1),
 		NewVertex(1, 1, -1),
-	}
-	front := polygon{
+	)
+	front := NewPolygon(
 		NewVertex(-1, -1, 1),
 		NewVertex(-1, 1, 1),
 		NewVertex(1, 1, 1),
 		NewVertex(1, -1, 1),
-	}
-	left := polygon{
+	)
+	left := NewPolygon(
 		NewVertex(1, -1, -1),
 		NewVertex(1, -1, 1),
 		NewVertex(1, 1, 1),
 		NewVertex(1, 1, -1),
-	}
-	right := polygon{
+	)
+	right := NewPolygon(
 		NewVertex(-1, -1, -1),
 		NewVertex(-1, -1, 1),
 		NewVertex(-1, 1, 1),
 		NewVertex(-1, 1, -1),
-	}
-	back := polygon{
+	)
+	back := NewPolygon(
 		NewVertex(-1, -1, -1),
 		NewVertex(-1, 1, -1),
 		NewVertex(1, 1, -1),
 		NewVertex(1, -1, -1),
-	}
-	bottom := polygon{
+	)
+	bottom := NewPolygon(
 		NewVertex(-1, -1, -1),
 		NewVertex(-1, -1, 1),
 		NewVertex(1, -1, 1),
 		NewVertex(1, -1, -1),
-	}
+	)
 
 	return &geometry{
-		&back,
-		&left,
-		&front,
-		&right,
-		&bottom,
-		&top,
+		back,
+		left,
+		front,
+		right,
+		bottom,
+		top,
 	}
 }
 
 
-func debug(g *geometry) {
+func debug(c *camera, g *geometry, l *dirlight) {
 	fmt.Println(*g)
 	for _, p := range *g {
-		for _, v := range *p {
-			fmt.Println(*v)
-		}
+		fmt.Println(p.Normal())
 	}
 }

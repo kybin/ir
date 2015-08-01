@@ -1,79 +1,125 @@
 package main
 
-type vertex vector4
+type vertex struct {
+	P vector3
+	w float64
+	v3a map[string]vector3
+	fa map[string]float64
+}
 
 func NewVertex(x, y, z float64) *vertex {
-	return &vertex{x, y, z, 1}
-}
-
-func (v *vertex) Position() vector3 {
-	return vector3{v.x, v.y, v.z}
-}
-
-func (v *vertex) Transform(m matrix4) {
-	*v = vertex{
-		v.x*m.aa + v.y*m.ab + v.z*m.ac + v.w*m.ad,
-		v.x*m.ba + v.y*m.bb + v.z*m.bc + v.w*m.bd,
-		v.x*m.ca + v.y*m.cb + v.z*m.cc + v.w*m.cd,
-		v.x*m.da + v.y*m.db + v.z*m.dc + v.w*m.dd,
+	v3a := make(map[string]vector3)
+	fa := make(map[string]float64)
+	return &vertex{
+		P: vector3{x, y, z},
+		w: 1,
+		v3a: v3a,
+		fa: fa,
 	}
 }
 
-type polygon []*vertex
+func (v *vertex) Pos() vector3 {
+	return v.P
+}
+
+func (v *vertex) Transform(m matrix4) {
+	x, y, z, w := v.P.x, v.P.y, v.P.z, v.w
+	v.P = vector3{
+		x*m.aa + y*m.ab + z*m.ac + w*m.ad,
+		x*m.ba + y*m.bb + z*m.bc + w*m.bd,
+		x*m.ca + y*m.cb + z*m.cc + w*m.cd,
+	}
+	v.w = x*m.da + y*m.db + z*m.dc + w*m.dd
+}
+
+type polygon struct {
+	vts []*vertex
+	v3a map[string]vector3
+	fa map[string]float64
+}
+
+func NewPolygon(vts ...*vertex) *polygon {
+	v3a := make(map[string]vector3)
+	fa := make(map[string]float64)
+	return &polygon{
+		vts: vts,
+		v3a: v3a,
+		fa: fa,
+	}
+}
 
 func (p *polygon) Transform(m matrix4) {
-	for _, v := range *p {
+	for _, v := range p.vts {
 		v.Transform(m)
 	}
 }
 
+// this method returns "N" attribute rather than exact normal.
+// if you want it, call this after CalculateNormal.
 func (p *polygon) Normal() vector3 {
-	switch len(*p) {
+	val, _ := p.v3a["N"]
+	return val
+}
+
+func (p *polygon) CalculateNormal() {
+	vts := p.vts
+	switch len(vts) {
 	case 0, 1, 2:
-		return vector3{0, 0, 0}
+		return
 	default:
-		v1 := (*p)[1].Position().Sub((*p)[0].Position()).Normalize()
-		v2 := (*p)[2].Position().Sub((*p)[1].Position()).Normalize()
-		return v1.Cross(v2).Normalize()
+		v1 := vts[1].Pos().Sub(vts[0].Pos()).Normalize()
+		v2 := vts[2].Pos().Sub(vts[1].Pos()).Normalize()
+		p.v3a["N"] = v1.Cross(v2).Normalize()
 	}
 }
 
 func (p *polygon) Center() vector3 {
-	switch len(*p) {
+	switch len(p.vts) {
 	case 0:
 		return vector3{0, 0, 0}
 	default:
 		center := vector3{0, 0, 0}
-		for _, v := range (*p) {
-			center = center.Add(v.Position())
+		for _, v := range p.vts {
+			center = center.Add(v.Pos())
 		}
-		center = center.Div(float64(len(*p)))
+		center = center.Div(float64(len(p.vts)))
 		return center
 	}
 }
 
 func (p *polygon) BBox() bbox3 {
-	min := (*p)[0].Position()
-	max := (*p)[0].Position()
-	for _, v := range (*p)[1:] {
-		if min.x > v.x {
-			min.x = v.x
-		} else if max.x < v.x {
-			max.x = v.x
+	switch len(p.vts) {
+	case 0:
+		return bbox3{vector3{0, 0, 0}, vector3{0, 0, 0}}
+	case 1:
+		return bbox3{p.vts[0].Pos(), p.vts[0].Pos()}
+	default:
+		min := p.vts[0].Pos()
+		max := min
+		for _, v := range p.vts[1:] {
+			x := v.P.x
+			if min.x > x {
+				min.x = x
+			} else if max.x < x {
+				max.x = x
+			}
+			y := v.P.y
+			if min.y > y {
+				min.y = y
+			} else if max.y < y {
+				max.y = y
+			}
+			z := v.P.z
+			if min.z > z {
+				min.z = z
+			} else if max.z < z {
+				max.z = z
+			}
 		}
-		if min.y > v.y {
-			min.y = v.y
-		} else if max.y < v.y {
-			max.y = v.y
-		}
-		if min.z > v.z {
-			min.z = v.z
-		} else if max.z < v.z {
-			max.z = v.z
-		}
+		return bbox3{min, max}
 	}
-	return bbox3{min, max}
 }
+
 type geometry []*polygon // TODO : nurbs, curve
 
 func (g geometry) Transform(m matrix4) {

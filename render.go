@@ -13,8 +13,8 @@ func render(c *camera, g *geometry) {
 	// TODO : clipping
 	// flatten
 	for _, p := range *g {
-		for _, v := range *p {
-			*v = vertex{v.x / v.z, v.y / v.z, 1, 1}
+		for _, v := range p.vts {
+			v.P = vector3{v.P.x/v.P.z, v.P.y/v.P.z, 1}
 		}
 	}
 	dx := c.aptx / float64(c.resx)
