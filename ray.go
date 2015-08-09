@@ -9,9 +9,6 @@ type ray struct {
 	d vector3
 }
 
-// TODO :
-//  better hit algorithm. with current method, it's hard to find hit position.
-//  current hit position is not accurate.
 func (r *ray) Sample(scn *scene) (sample float64, hit bool) {
 	dist := float64(1000000000)
 	for _, ply := range (*scn.geo) {
@@ -29,7 +26,7 @@ func (r *ray) Sample(scn *scene) (sample float64, hit bool) {
 			}
 		case 4:
 			// divide the square to 2 triangles. then we can use above (triangle) approach.
-			// if any triangle contains the point, it means the square contains the point.
+			// if ray hit any of them, ray hit the quad.
 			p, ok := r.HitP(ply.vts[0].P, ply.vts[1].P, ply.vts[2].P)
 			if !ok {
 				p, ok = r.HitP(ply.vts[0].P, ply.vts[2].P, ply.vts[3].P)
