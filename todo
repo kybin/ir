@@ -1,3 +1,2 @@
-render box as soon as possible as png
-geometry, light, camera, space, trasform
+texture mapping
 scene description file. parse it.
