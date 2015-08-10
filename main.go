@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
+	"image"
 )
 
 func main() {
@@ -74,7 +76,17 @@ func main() {
 
 	lit := &dirlight{dir:vector3{-0.5, -1, 0}.Normalize()}
 
-	scn := &scene{cam, geo, lit}
+	reader, err := os.Open("tex/uv.jpg")
+	if err != nil {
+		panic("cannot open texture file.")
+	}
+	defer reader.Close()
+	m, _, err := image.Decode(reader)
+	if err != nil {
+		panic(err)
+	}
+
+	scn := &scene{cam, geo, lit, m}
 
 	render(scn)
 }
