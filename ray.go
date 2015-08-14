@@ -25,7 +25,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr color.RGBA, h
 				hitd := p.Len()
 				if hitd < dist {
 					dist = hitd
-					clr = HitColor(ply, u, v, geo, texs)
+					clr = HitColor(ply, u, v, geo, scn.lits, texs)
 				}
 			case 4:
 				// divide the square to 2 triangles. then we can use above (triangle) approach.
@@ -42,7 +42,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr color.RGBA, h
 				hitd := p.Len()
 				if hitd < dist {
 					dist = hitd
-					clr = HitColor(ply, u, v, geo, texs)
+					clr = HitColor(ply, u, v, geo, scn.lits, texs)
 				}
 			default:
 				panic("n-gon not supported yet.")
@@ -92,7 +92,7 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	return dPly.Add(r.o), dotB, dotC, true
 }
 
-func HitColor(ply *polygon, u, v float64, geo *geometry, texs map[string]image.Image) color.RGBA {
+func HitColor(ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) color.RGBA {
 	pth, ok := ply.sa["texture"]
 	if !ok {
 		pth, ok = geo.sa["texture"]
@@ -104,7 +104,16 @@ func HitColor(ply *polygon, u, v float64, geo *geometry, texs map[string]image.I
 	if !ok {
 		return color.RGBA{uint8(255), uint8(255), uint8(255), uint8(255)}
 	}
-	return TextureSample(tex, u, v)
-	//sample = scn.lit.dir.Dot(ply.Normal())
+	clr := TextureSample(tex, u, v)
+
+	var r, g, b float64
+	for _, lit := range lits {
+		dot := lit.dir.Dot(ply.Normal())
+		r += lit.r * dot
+		g += lit.g * dot
+		b += lit.b * dot
+	}
+
+	return color.RGBA{uint8(float64(clr.R)*r), uint8(float64(clr.G)*g), uint8(float64(clr.B)*b), clr.A}
 }
 

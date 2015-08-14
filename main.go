@@ -59,7 +59,6 @@ func main() {
 	}
 	viewTransform := viewTranslation.Multiply(viewRotation)
 
-
 	geo.Transform(viewTransform.Multiply(modelTransform))
 	geo.CalculateNormal()
 
@@ -73,7 +72,7 @@ func main() {
 	//	0, 0, 1, 0,
 	//}
 
-	lit := &dirlight{dir:vector3{-0.5, -1, 0}.Normalize()}
+	lit := &dirlight{r:1, g:1, b:1, dir:vector3{-0.5, -1, 0}.Normalize()}
 
 	scn := &scene{cam, []*geometry{geo}, []*dirlight{lit}}
 
