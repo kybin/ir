@@ -5,18 +5,16 @@ type vertex struct {
 	w float64
 	v3a map[string]vector3
 	fa map[string]float64
-	parent *polygon
+	sa map[string]string
 }
 
 func NewVertex(P vector3) *vertex {
-	v3a := make(map[string]vector3)
-	fa := make(map[string]float64)
 	return &vertex{
 		P: P,
 		w: 1,
-		v3a: v3a,
-		fa: fa,
-		parent: nil, // set when contained to polygon.
+		v3a: make(map[string]vector3),
+		fa: make(map[string]float64),
+		sa: make(map[string]string),
 	}
 }
 
@@ -34,32 +32,20 @@ func (v *vertex) Transform(m matrix4) {
 	v.w = x*m.da + y*m.db + z*m.dc + w*m.dd
 }
 
-func (v *vertex) Normal() vector3 {
-	if v.parent == nil {
-		return vector3{0, 0, 0}
-	}
-	val, _ := v.parent.v3a["N"]
-	return val
-}
-
 type polygon struct {
 	vts []*vertex
 	v3a map[string]vector3
 	fa map[string]float64
+	sa map[string]string
 }
 
 func NewPolygon(vts ...*vertex) *polygon {
-	v3a := make(map[string]vector3)
-	fa := make(map[string]float64)
-	ply := &polygon{
+	return &polygon{
 		vts: vts,
-		v3a: v3a,
-		fa: fa,
+		v3a: make(map[string]vector3),
+		fa: make(map[string]float64),
+		sa: make(map[string]string),
 	}
-	for _, v := range vts {
-		v.parent = ply
-	}
-	return ply
 }
 
 func (p *polygon) Transform(m matrix4) {
@@ -134,16 +120,31 @@ func (p *polygon) BBox() bbox3 {
 	}
 }
 
-type geometry []*polygon // TODO : nurbs, curve
+// TODO : nurbs, curve
+type geometry struct {
+	plys []*polygon
+	v3a map[string]vector3
+	fa map[string]float64
+	sa map[string]string
+}
+
+func NewGeometry(plys ...*polygon) *geometry {
+	return &geometry{
+		plys: plys,
+		v3a: make(map[string]vector3),
+		fa: make(map[string]float64),
+		sa: make(map[string]string),
+	}
+}
 
 func (g *geometry) Transform(m matrix4) {
-	for _, p := range *g {
+	for _, p := range g.plys {
 		p.Transform(m)
 	}
 }
 
 func (g *geometry) CalculateNormal() {
-	for _, p := range *g {
+	for _, p := range g.plys {
 		p.CalculateNormal()
 	}
 }

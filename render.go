@@ -9,7 +9,7 @@ import (
 	// "math/rand"
 )
 
-func render(scn *scene) {
+func render(scn *scene, texs map[string]image.Image) {
 	// TODO : copy geometry?
 	// TODO : clipping
 	c := scn.cam
@@ -25,7 +25,7 @@ func render(scn *scene) {
 			y := mix(c.Apty()/2, -c.Apty()/2, float64(py)/float64(c.resy))
 			//var clr color.Color
 			r := &ray{o: vector3{0, 0, 0}, d:vector3{x, y, -c.focal}}
-			clr, hit := r.Sample(scn)
+			clr, hit := r.Sample(scn, texs)
 			if !hit {
 				clr = color.RGBA{uint8(0), uint8(0), uint8(0), uint8(0)}
 			}

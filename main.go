@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"os"
 	"image"
 )
 
@@ -76,19 +75,23 @@ func main() {
 
 	lit := &dirlight{dir:vector3{-0.5, -1, 0}.Normalize()}
 
-	reader, err := os.Open("tex/uv.jpg")
-	if err != nil {
-		panic("cannot open texture file.")
-	}
-	defer reader.Close()
-	m, _, err := image.Decode(reader)
-	if err != nil {
-		panic(err)
-	}
+	scn := &scene{cam, []*geometry{geo}, []*dirlight{lit}}
 
-	scn := &scene{cam, geo, lit, m}
+	texs := loadTextures([]string{"tex/uv.jpg", "tex/uv_gray.jpg"})
 
-	render(scn)
+	render(scn, texs)
+}
+
+func loadTextures(pths []string) map[string]image.Image {
+	texs := make(map[string]image.Image)
+	for _, p := range pths {
+		t, ok := LoadTexture(p)
+		if !ok {
+			continue
+		}
+		texs[p] = t
+	}
+	return texs
 }
 
 func loadGeometry() *geometry {
@@ -128,21 +131,25 @@ func loadGeometry() *geometry {
 		NewVertex(vector3{1, -1, 1}),
 		NewVertex(vector3{1, -1, -1}),
 	)
+	front.sa["texture"] = "tex/uv_gray.jpg"
+	back.sa["texture"] = "tex/uv_gray.jpg"
 
-	return &geometry{
+	geo := NewGeometry(
 		back,
 		left,
 		front,
 		right,
 		bottom,
 		top,
-	}
+	)
+	geo.sa["texture"] = "tex/uv.jpg"
+	return geo
 }
 
 
 func debug(c *camera, g *geometry, l *dirlight) {
 	fmt.Println(*g)
-	for _, p := range *g {
+	for _, p := range g.plys {
 		fmt.Println(p.Normal())
 	}
 }

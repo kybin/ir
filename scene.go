@@ -1,12 +1,15 @@
 package main
 
-import(
-	"image"
-)
-
 type scene struct {
 	cam *camera
-	geo *geometry // TODO geos []*geometry
-	lit *dirlight // TODO lits []*light
-	tex image.Image
+	geos []*geometry
+	lits []*dirlight
+}
+
+func NewScene(cam *camera, geos []*geometry, lits []*dirlight) *scene {
+	return &scene{
+		cam: cam,
+		geos: geos,
+		lits: lits,
+	}
 }
