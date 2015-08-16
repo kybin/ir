@@ -6,7 +6,7 @@ import (
 
 func TestTransform(t *testing.T) {
 	v := NewVertex(vector3{1, 0, 0})
-	g := &geometry{NewPolygon(v)}
+	g := NewGeometry(NewPolygon(v))
 
 	tr := matrix4{
 		0, 1, 0, 0,
