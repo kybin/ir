@@ -1,2 +1,3 @@
-texture mapping
+ray hit with bbox first.
+check return value when x, y in image.Sample(x, y) be outside of bound.
 scene description file. parse it.
