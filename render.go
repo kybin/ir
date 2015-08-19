@@ -6,7 +6,6 @@ import (
 	"image/color"
 	"image/png"
 	_ "image/jpeg"
-	// "math/rand"
 )
 
 func render(scn *scene, texs map[string]image.Image) {
@@ -18,18 +17,28 @@ func render(scn *scene, texs map[string]image.Image) {
 		panic("cannot generate output image file.")
 	}
 	defer f.Close()
+
+	nsample := 1
+	rng := rand1D()
+	dx, dy := c.aptx/float64(c.resx), c.Apty()/float64(c.resy)
+
 	img := image.NewRGBA(image.Rect(0, 0, c.resx, c.resy))
 	for py := 0; py < c.resy; py++ {
 		for px := 0; px < c.resx; px++ {
-			x := mix(-c.aptx/2, c.aptx/2, float64(px)/float64(c.resx))
-			y := mix(c.Apty()/2, -c.Apty()/2, float64(py)/float64(c.resy))
-			//var clr color.Color
-			r := &ray{o: vector3{0, 0, 0}, d:vector3{x, y, -c.focal}}
-			clr, hit := r.Sample(scn, texs)
-			if !hit {
-				clr = color.RGBA{uint8(0), uint8(0), uint8(0), uint8(0)}
+			clr := Color{}
+			for i := 0; i < nsample; i++ {
+				x := mix(-c.aptx/2, c.aptx/2, float64(px)/float64(c.resx))
+				y := mix(c.Apty()/2, -c.Apty()/2, float64(py)/float64(c.resy))
+				offx := dx * <-rng
+				offy := dy * <-rng
+				r := &ray{d:vector3{x+offx, y+offy, -c.focal}}
+				c, _ := r.Sample(scn, texs)
+				clr = clr.Add(c)
 			}
-			img.Set(px, py, clr)
+			clr = clr.Div(float64(nsample))
+			go func(img *image.RGBA, px, py int, clr color.RGBA) {
+				img.Set(px, py, clr)
+			}(img, px, py, color.RGBA{uint8(255*clr.r), uint8(255*clr.g), uint8(255*clr.b), uint8(255*clr.a)})
 		}
 	}
 	err = png.Encode(f, img)
@@ -37,4 +46,5 @@ func render(scn *scene, texs map[string]image.Image) {
 		panic("cannot write image")
 	}
 }
+
 

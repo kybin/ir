@@ -3,7 +3,6 @@ package main
 import (
 	"math"
 	"image"
-	"image/color"
 )
 
 type ray struct {
@@ -11,7 +10,7 @@ type ray struct {
 	d vector3
 }
 
-func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr color.RGBA, hit bool) {
+func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bool) {
 	dist := float64(1000000000)
 	for _, geo := range scn.geos {
 		for _, ply := range geo.plys {
@@ -50,9 +49,9 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr color.RGBA, h
 		}
 	}
 	if !hit {
-		return color.RGBA{}, false
+		return Color{}, false
 	}
-	return clr, hit
+	return clr, true
 }
 
 // does the ray hit a-b-c polygon?
@@ -92,17 +91,17 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	return dPly.Add(r.o), dotB, dotC, true
 }
 
-func HitColor(ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) color.RGBA {
+func HitColor(ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) Color {
 	pth, ok := ply.sa["texture"]
 	if !ok {
 		pth, ok = geo.sa["texture"]
 		if !ok {
-			return color.RGBA{uint8(255), uint8(255), uint8(255), uint8(255)}
+			return Color{1, 1, 1, 1}
 		}
 	}
 	tex, ok := texs[pth]
 	if !ok {
-		return color.RGBA{uint8(255), uint8(255), uint8(255), uint8(255)}
+		return Color{1, 1, 1, 1}
 	}
 	clr := TextureSample(tex, u, v)
 
@@ -114,6 +113,6 @@ func HitColor(ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs 
 		b += lit.b * dot
 	}
 
-	return color.RGBA{uint8(float64(clr.R)*r), uint8(float64(clr.G)*g), uint8(float64(clr.B)*b), clr.A}
+	return Color{float64(clr.R)/255 * r, float64(clr.G)/255 * g, float64(clr.B)/255 * b, float64(clr.A)/255}
 }
 
