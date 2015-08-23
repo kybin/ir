@@ -24,6 +24,7 @@ func main() {
 		0, 0, 0, 1,
 	}
 	modelTransform := xRot.Multiply(yRot).Transpose()
+	geo.Transform(modelTransform)
 
 	// view transform should inverse of camera transform
 	// for easy reversing, think it as rotation+translation.
@@ -31,8 +32,6 @@ func main() {
 	// inverse of rotation matrix is it's transpose.
 	// http://www.katjaas.nl/transpose/transpose.html
 	// assume camera axis are already normalized.
-	//
-	// TODO : redefine camera.
 	cam := &camera{
 		P:     vector3{0, 0, 10},
 		front: vector3{0, 0, -1},
@@ -45,32 +44,6 @@ func main() {
 		near:  0.001,
 		far:   10000,
 	}
-	viewTranslation := matrix4{
-		1, 0, 0, -cam.P.x,
-		0, 1, 0, -cam.P.y,
-		0, 0, 1, -cam.P.z,
-		0, 0, 0, 1,
-	}
-	viewRotation := matrix4{
-		cam.right.x, cam.up.x, cam.front.x, 0,
-		cam.right.y, cam.up.y, cam.front.y, 0,
-		cam.right.z, cam.up.z, cam.front.z, 0,
-		0, 0, 0, 1,
-	}
-	viewTransform := viewTranslation.Multiply(viewRotation)
-
-	geo.Transform(viewTransform.Multiply(modelTransform))
-	geo.CalculateNormal()
-
-	// TODO : do I need perspective projection in pbr renderer?
-	// perspective projection
-	// http://ogldev.atspace.co.uk/www/tutorial12/tutorial12.html
-	// perspProjection := matrix4{
-	//	1 / cam.Apty(), 0, 0, 0,
-	//	0, 1 / cam.aptx, 0, 0,
-	//	0, 0, (-cam.near - cam.far) / (cam.near - cam.far), 2 * cam.far * cam.near / (cam.near - cam.far),
-	//	0, 0, 1, 0,
-	//}
 
 	lit := &dirlight{r:1, g:1, b:1, dir:vector3{-0.5, -1, 0}.Normalize()}
 

@@ -1,7 +1,7 @@
 package main
 
 // return smaller number.
-func min(a, b float64) float64 {
+func minval(a, b float64) float64 {
 	if a < b {
 		return a
 	}
@@ -9,21 +9,35 @@ func min(a, b float64) float64 {
 }
 
 // return bigger number.
-func max(a, b float64) float64 {
+func maxval(a, b float64) float64 {
 	if a > b {
 		return a
 	}
 	return b
 }
 
-// alpha will clamped into 0 to 1.
-// if alpha is 0 return value is a.
-// if alpha is 1 return value is b.
-func mix(a, b, alpha float64) float64 {
-	if alpha > 1 {
-		alpha = 1
-	} else if alpha < 0 {
-		alpha = 0
+// amount will clamped into 0 to 1.
+// if amount is 0 return value is a.
+// if amount is 1 return value is b.
+func mix(a, b, amount float64) float64 {
+	if amount <= 0 {
+		return a
 	}
-	return a * (1-alpha) + b * alpha
+	if amount >= 1 {
+		return b
+	}
+	return a * (1-amount) + b * amount
+}
+
+// amount will clamped into 0 to 1.
+// if amount is 0 return value is a.
+// if amount is 1 return value is b.
+func mixVector3(a, b vector3, amount float64) vector3 {
+	if amount <= 0 {
+		return a
+	}
+	if amount >= 1 {
+		return b
+	}
+	return a.Mult(1-amount).Add(b.Mult(amount))
 }

@@ -13,6 +13,14 @@ type ray struct {
 func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bool) {
 	dist := float64(1000000000)
 	for _, geo := range scn.geos {
+		// ray not hit the bounding sphere means not hit the geometry.
+		bs := geo.bb.BSphere()
+		toBs := bs.o.Sub(r.o)
+		d := toBs.Sub(r.d.Normalize().Mult(toBs.Dot(r.d.Normalize()))).Len()
+		if d > bs.r {
+			continue
+		}
+		// inside bounding sphere. check more.
 		for _, ply := range geo.plys {
 			switch len(ply.vts) {
 			case 3:
@@ -21,7 +29,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 					continue
 				}
 				hit = true
-				hitd := p.Len()
+				hitd := r.o.Sub(p).Len()
 				if hitd < dist {
 					dist = hitd
 					clr = HitColor(ply, u, v, geo, scn.lits, texs)
@@ -38,7 +46,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 					continue
 				}
 				hit = true
-				hitd := p.Len()
+				hitd := r.o.Sub(p).Len()
 				if hitd < dist {
 					dist = hitd
 					clr = HitColor(ply, u, v, geo, scn.lits, texs)
@@ -64,14 +72,14 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	N := toB.Cross(toC).Normalize()
 	dDotN := r.d.Dot(N)
 	if math.Abs(dDotN) < 0.00001 {
-		return vector3{}, 0, 0, false
+		return
 	}
 	if dDotN < 0 {
 		N, dDotN = N.Neg(), -dDotN
 	}
 	aDotN := a.Dot(N)
 	if aDotN < 0 {
-		panic("aDot is smaller than 0.")
+		return
 	}
 	dPly := r.d.Mult(aDotN/dDotN)
 	dPlane := dPly.Sub(a)
@@ -83,10 +91,10 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	newB := toC.Cross(dPlane).Cross(toC).Normalize()
 	dotB := dPlane.Dot(newB) / toB.Dot(newB)
 	if dotB < 0 || dotB > 1 {
-		return vector3{}, 0, 0, false
+		return
 	}
 	if dotB + dotC > 1 {
-		return vector3{}, 0, 0, false
+		return
 	}
 	return dPly.Add(r.o), dotB, dotC, true
 }

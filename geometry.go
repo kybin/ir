@@ -57,19 +57,13 @@ func (p *polygon) Transform(m matrix4) {
 // this method returns "N" attribute rather than exact normal.
 // if you want it, call this after CalculateNormal.
 func (p *polygon) Normal() vector3 {
-	val, _ := p.v3a["N"]
-	return val
-}
-
-func (p *polygon) CalculateNormal() {
-	vts := p.vts
-	switch len(vts) {
+	switch len(p.vts) {
 	case 0, 1, 2:
-		return
+		return vector3{}
 	default:
-		v1 := vts[1].P.Sub(vts[0].P).Normalize()
-		v2 := vts[2].P.Sub(vts[1].P).Normalize()
-		p.v3a["N"] = v1.Cross(v2).Normalize()
+		v1 := p.vts[1].P.Sub(p.vts[0].P).Normalize()
+		v2 := p.vts[2].P.Sub(p.vts[1].P).Normalize()
+		return v1.Cross(v2).Normalize()
 	}
 }
 
@@ -126,15 +120,23 @@ type geometry struct {
 	v3a map[string]vector3
 	fa map[string]float64
 	sa map[string]string
+	bb bbox3
 }
 
 func NewGeometry(plys ...*polygon) *geometry {
-	return &geometry{
+	g := &geometry{
 		plys: plys,
 		v3a: make(map[string]vector3),
 		fa: make(map[string]float64),
 		sa: make(map[string]string),
 	}
+	if len(plys) > 0 {
+		g.bb = plys[0].BBox()
+	}
+	for _, p := range plys[1:] {
+		g.bb = g.bb.Add(p.BBox())
+	}
+	return g
 }
 
 func (g *geometry) Transform(m matrix4) {
@@ -143,8 +145,3 @@ func (g *geometry) Transform(m matrix4) {
 	}
 }
 
-func (g *geometry) CalculateNormal() {
-	for _, p := range g.plys {
-		p.CalculateNormal()
-	}
-}

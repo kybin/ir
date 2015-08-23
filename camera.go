@@ -23,3 +23,4 @@ func (c *camera) Apty() float64 {
 func (c *camera) FOV() float64 {
 	return 2 * math.Atan((c.Apty()/2) / c.focal)
 }
+
