@@ -10,18 +10,25 @@ type ray struct {
 	d vector3
 }
 
+// NewRay return a new ray.
+// Given 'd' will normalized.
+func NewRay(o, d vector3) *ray {
+	return &ray{o, d.Normalize()}
+}
+
 func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bool) {
 	dist := float64(1000000000)
 	for _, geo := range scn.geos {
 		// ray not hit the bounding sphere means not hit the geometry.
 		bs := geo.bb.BSphere()
-		toBs := bs.o.Sub(r.o)
-		d := toBs.Sub(r.d.Normalize().Mult(toBs.Dot(r.d.Normalize()))).Len()
-		if d > bs.r {
+		if !r.HitBSphere(bs) {
 			continue
 		}
 		// inside bounding sphere. check more.
 		for _, ply := range geo.plys {
+			if !r.HitBSphere(ply.BBox().BSphere()) {
+				continue
+			}
 			switch len(ply.vts) {
 			case 3:
 				p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[2].P)
@@ -60,6 +67,16 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 		return Color{}, false
 	}
 	return clr, true
+}
+
+// HitBSphere checks the ray hit the bounding sphere.
+func (r *ray) HitBSphere(bs bsphere) bool {
+		toBs := bs.o.Sub(r.o)
+		dist := toBs.Sub(r.d.Mult(toBs.Dot(r.d))).Len()
+		if dist > bs.r {
+			return false
+		}
+		return true
 }
 
 // does the ray hit a-b-c polygon?

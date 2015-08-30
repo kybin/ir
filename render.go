@@ -31,14 +31,12 @@ func render(scn *scene, texs map[string]image.Image) {
 				offy := <-rng
 				lr := mixVector3(l, r, (float64(px)+offx)/float64(c.resx-1))
 				tb := mixVector3(t, b, (float64(py)+offy)/float64(c.resy-1))
-				r := &ray{o:c.P, d:lr.Add(tb).Add(f).Normalize()}
+				r := NewRay(c.P, f.Add(lr).Add(tb))
 				sc, _ := r.Sample(scn, texs)
 				clr = clr.Add(sc)
 			}
 			clr = clr.Div(float64(nsample))
-			go func(img *image.RGBA, px, py int, clr color.RGBA) {
-				img.Set(px, py, clr)
-			}(img, px, py, color.RGBA{uint8(255*clr.r), uint8(255*clr.g), uint8(255*clr.b), uint8(255*clr.a)})
+			img.Set(px, py, color.RGBA{uint8(255*clr.r), uint8(255*clr.g), uint8(255*clr.b), uint8(255*clr.a)})
 		}
 	}
 
