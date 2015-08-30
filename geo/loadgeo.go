@@ -6,6 +6,22 @@ import (
 	"fmt"
 )
 
+type vector3 struct {
+	x, y, z float64
+}
+
+type Point struct {
+	P vector3
+}
+
+type Vertex struct {
+	pt *Point
+}
+
+type Prim struct {
+	vts []*Vertex
+}
+
 type El map[string]interface{}
 
 func NewEl(in interface{}) El {
@@ -42,19 +58,47 @@ func main() {
 	}
 	var f interface{}
 	json.Unmarshal(b, &f)
-	indiceSl := Find(f, "topology", "pointref", "indices").([]interface{})
-	indices := make([]int, len(indiceSl))
-	for i := range indiceSl {
-		indices[i] = int(indiceSl[i].(float64))
-	}
-	fmt.Println(indices)
+
+	points := make([]*Point, 0)
 	pointAttrEl := Find(f, "attributes", "pointattributes").([]interface{})
-	var poses interface{}
 	for i := range pointAttrEl {
 		if Find(pointAttrEl, i, 0, "name").(string) == "P" {
-			poses = Find(pointAttrEl, i, 1, "values", "tuples")
+			poses := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
+			for _, p := range poses {
+				p0 := p.([]interface{})[0].(float64)
+				p1 := p.([]interface{})[1].(float64)
+				p2 := p.([]interface{})[2].(float64)
+				pt := Point{vector3{p0, p1, p2}}
+				points = append(points, &pt)
+			}
 			break
 		}
 	}
-	fmt.Println(poses)
+	fmt.Println(points)
+
+	verts := make([]*Vertex, 0)
+	indiceSl := Find(f, "topology", "pointref", "indices").([]interface{})
+	for i := range indiceSl {
+		ip := int(indiceSl[i].(float64))
+		verts = append(verts, &Vertex{points[ip]})
+	}
+	fmt.Println(verts)
+
+	prims := make([]*Prim, 0)
+	primEl := Find(f, "primitives").([]interface{})
+	for i := range primEl {
+		if Find(primEl, i, 0, "type").(string) == "run" && Find(primEl, i, 0, "runtype").(string) == "Poly" {
+			for _, v := range Find(primEl, i, 1).([]interface{}) {
+				var prim Prim
+				vec := v.([]interface{})[0].([]interface{})
+				for _, i := range vec {
+					prim.vts = append(prim.vts, verts[int(i.(float64))])
+				}
+				prims = append(prims, &prim)
+			}
+			break
+		}
+	}
+	fmt.Println(prims)
 }
+
