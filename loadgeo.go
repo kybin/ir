@@ -6,22 +6,6 @@ import (
 	"fmt"
 )
 
-type vector3 struct {
-	x, y, z float64
-}
-
-type Point struct {
-	P vector3
-}
-
-type Vertex struct {
-	pt *Point
-}
-
-type Prim struct {
-	vts []*Vertex
-}
-
 type El map[string]interface{}
 
 func NewEl(in interface{}) El {
@@ -51,54 +35,54 @@ func Find(in interface{}, keys ...interface{}) interface{} {
 	return in
 }
 
-func main() {
-	b, err := ioutil.ReadFile("box.geo")
+func loadGeometry() *geometry {
+	b, err := ioutil.ReadFile("geo/rubbertoy.geo")
 	if err != nil {
 		fmt.Println("cannot open file")
 	}
 	var f interface{}
 	json.Unmarshal(b, &f)
 
-	points := make([]*Point, 0)
+	poses := make([]vector3, 0)
 	pointAttrEl := Find(f, "attributes", "pointattributes").([]interface{})
 	for i := range pointAttrEl {
 		if Find(pointAttrEl, i, 0, "name").(string) == "P" {
-			poses := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
-			for _, p := range poses {
+			poseEl := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
+			for _, p := range poseEl {
 				p0 := p.([]interface{})[0].(float64)
 				p1 := p.([]interface{})[1].(float64)
 				p2 := p.([]interface{})[2].(float64)
-				pt := Point{vector3{p0, p1, p2}}
-				points = append(points, &pt)
+				pos := vector3{p0, p1, p2}
+				poses = append(poses, pos)
 			}
 			break
 		}
 	}
-	fmt.Println(points)
 
-	verts := make([]*Vertex, 0)
+	verts := make([]*vertex, 0)
 	indiceSl := Find(f, "topology", "pointref", "indices").([]interface{})
 	for i := range indiceSl {
 		ip := int(indiceSl[i].(float64))
-		verts = append(verts, &Vertex{points[ip]})
+		v := NewVertex(poses[ip])
+		verts = append(verts, v)
 	}
-	fmt.Println(verts)
 
-	prims := make([]*Prim, 0)
+	polys := make([]*polygon, 0)
 	primEl := Find(f, "primitives").([]interface{})
 	for i := range primEl {
 		if Find(primEl, i, 0, "type").(string) == "run" && Find(primEl, i, 0, "runtype").(string) == "Poly" {
 			for _, v := range Find(primEl, i, 1).([]interface{}) {
-				var prim Prim
+				vts := make([]*vertex, 0)
 				vec := v.([]interface{})[0].([]interface{})
 				for _, i := range vec {
-					prim.vts = append(prim.vts, verts[int(i.(float64))])
+					vts = append(vts, verts[int(i.(float64))])
 				}
-				prims = append(prims, &prim)
+				ply := NewPolygon(vts...)
+				polys = append(polys, ply)
 			}
 			break
 		}
 	}
-	fmt.Println(prims)
+	return NewGeometry(polys...)
 }
 

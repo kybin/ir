@@ -66,59 +66,6 @@ func loadTextures(pths []string) map[string]image.Image {
 	return texs
 }
 
-func loadGeometry() *geometry {
-	top := NewPolygon(
-		NewVertex(vector3{-1, 1, -1}),
-		NewVertex(vector3{-1, 1, 1}),
-		NewVertex(vector3{1, 1, 1}),
-		NewVertex(vector3{1, 1, -1}),
-	)
-	front := NewPolygon(
-		NewVertex(vector3{-1, -1, 1}),
-		NewVertex(vector3{-1, 1, 1}),
-		NewVertex(vector3{1, 1, 1}),
-		NewVertex(vector3{1, -1, 1}),
-	)
-	left := NewPolygon(
-		NewVertex(vector3{1, -1, -1}),
-		NewVertex(vector3{1, -1, 1}),
-		NewVertex(vector3{1, 1, 1}),
-		NewVertex(vector3{1, 1, -1}),
-	)
-	right := NewPolygon(
-		NewVertex(vector3{-1, -1, -1}),
-		NewVertex(vector3{-1, -1, 1}),
-		NewVertex(vector3{-1, 1, 1}),
-		NewVertex(vector3{-1, 1, -1}),
-	)
-	back := NewPolygon(
-		NewVertex(vector3{-1, -1, -1}),
-		NewVertex(vector3{-1, 1, -1}),
-		NewVertex(vector3{1, 1, -1}),
-		NewVertex(vector3{1, -1, -1}),
-	)
-	bottom := NewPolygon(
-		NewVertex(vector3{-1, -1, -1}),
-		NewVertex(vector3{-1, -1, 1}),
-		NewVertex(vector3{1, -1, 1}),
-		NewVertex(vector3{1, -1, -1}),
-	)
-	front.sa["texture"] = "tex/uv_gray.jpg"
-	back.sa["texture"] = "tex/uv_gray.jpg"
-
-	geo := NewGeometry(
-		back,
-		left,
-		front,
-		right,
-		bottom,
-		top,
-	)
-	geo.sa["texture"] = "tex/uv.jpg"
-	return geo
-}
-
-
 func debug(c *camera, g *geometry, l *dirlight) {
 	fmt.Println(*g)
 	for _, p := range g.plys {
