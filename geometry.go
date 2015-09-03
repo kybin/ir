@@ -54,8 +54,7 @@ func (p *polygon) Transform(m matrix4) {
 	}
 }
 
-// this method returns "N" attribute rather than exact normal.
-// if you want it, call this after CalculateNormal.
+// this method returns geometric normal.
 func (p *polygon) Normal() vector3 {
 	switch len(p.vts) {
 	case 0, 1, 2:
