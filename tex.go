@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"image"
-	"image/color"
 	"fmt"
 )
 
@@ -22,12 +21,12 @@ func LoadTexture(pth string) (image.Image, bool) {
 	return tex, true
 }
 
-func TextureSample(tex image.Image, u, v float64) color.RGBA {
+func TextureSample(tex image.Image, u, v float64) Color {
 	bb := tex.Bounds()
 	x := int(float64(bb.Min.X) + u*float64(bb.Max.X-bb.Min.X-1))
 	y := int(float64(bb.Min.Y) + v*float64(bb.Max.Y-bb.Min.Y-1))
 	r, g, b, a := tex.At(x, y).RGBA()
-	return color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)}
+	return Color{float64(r >> 8)/255, float64(g >> 8)/255, float64(b >> 8)/255, float64(a >> 8)/255}
 }
 
 

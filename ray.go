@@ -39,7 +39,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 				hitd := r.o.Sub(p).Len()
 				if hitd < dist {
 					dist = hitd
-					clr = HitColor(ply, u, v, geo, scn.lits, texs)
+					clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
 				}
 			case 4:
 				// divide the square to 2 triangles. then we can use above (triangle) approach.
@@ -56,7 +56,7 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 				hitd := r.o.Sub(p).Len()
 				if hitd < dist {
 					dist = hitd
-					clr = HitColor(ply, u, v, geo, scn.lits, texs)
+					clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
 				}
 			default:
 				panic("n-gon not supported yet.")
@@ -116,28 +116,37 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	return dPly.Add(r.o), dotB, dotC, true
 }
 
-func HitColor(ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) Color {
+func HitColor(rr *ray, ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) Color {
+	var clr Color
 	pth, ok := ply.sa["texture"]
 	if !ok {
 		pth, ok = geo.sa["texture"]
 		if !ok {
-			return Color{1, 1, 1, 1}
+			clr = Color{1, 1, 1, 1}
+		}
+	} else {
+		tex, ok := texs[pth]
+		if !ok {
+			clr = Color{1, 1, 1, 1}
+		} else {
+			clr = TextureSample(tex, u, v)
 		}
 	}
-	tex, ok := texs[pth]
-	if !ok {
-		return Color{1, 1, 1, 1}
+
+	// TODO: Use intersect point's normal instead.
+	N := ply.Normal()
+	if N.Dot(rr.d) > 0 {
+		N = N.Neg()
 	}
-	clr := TextureSample(tex, u, v)
 
 	var r, g, b float64
-	for _, lit := range lits {
-		dot := lit.dir.Dot(ply.Normal())
-		r += lit.r * dot
-		g += lit.g * dot
-		b += lit.b * dot
+	for _, l := range lits {
+		dot := maxval(l.dir.Dot(N), 0)
+		r += l.r * dot
+		g += l.g * dot
+		b += l.b * dot
 	}
 
-	return Color{float64(clr.R)/255 * r, float64(clr.G)/255 * g, float64(clr.B)/255 * b, float64(clr.A)/255}
+	return Color{clr.r * r, clr.g * g, clr.b * b, clr.a}
 }
 
