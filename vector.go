@@ -64,6 +64,13 @@ func (v vector3) Div(f float64) vector3 {
 	return vector3{v.x / f, v.y / f, v.z / f}
 }
 
+func (v vector3) MultM4(m matrix4) vector3 {
+	x := v.x*m.aa + v.y*m.ab + v.z*m.ac + m.ad
+	y := v.x*m.ba + v.y*m.bb + v.z*m.bc + m.bd
+	z := v.x*m.ca + v.y*m.cb + v.z*m.cc + m.cd
+	return vector3{x, y, z}
+}
+
 func (v vector3) Rotate(rx, ry, rz float64, unit, order string) vector3 {
 	switch unit {
 	case "radian":

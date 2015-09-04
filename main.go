@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	geo := loadGeometry()
+	geo := loadGeometry("geo/rubbertoy.geo")
 
 	// TODO : rotation matrix
 	// rotation by (x:30, y:30) degree.

@@ -116,37 +116,47 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	return dPly.Add(r.o), dotB, dotC, true
 }
 
+// TODO: if N does not exist.
+func HitNormal(r *ray, ply *polygon, u, v float64) vector3 {
+	switch len(ply.vts) {
+	case 3:
+		// find dist from verticies to u,v pos?
+		// (sqrt(2)-distA)/sqrt(2)*attA + (1-distB)*attB + (1-distC)*attC
+		panic("not implemented yet.")
+	case 4:
+		// blend x then y.
+		Na := mixVector3(ply.vts[0].v3a["N"], ply.vts[1].v3a["N"], u)
+		Nb := mixVector3(ply.vts[3].v3a["N"], ply.vts[2].v3a["N"], u)
+		return mixVector3(Na, Nb, v).Normalize()
+	default:
+		panic("n-gon not supported yet.")
+	}
+}
+
 func HitColor(rr *ray, ply *polygon, u, v float64, geo *geometry, lits []*dirlight, texs map[string]image.Image) Color {
-	var clr Color
-	pth, ok := ply.sa["texture"]
-	if !ok {
-		pth, ok = geo.sa["texture"]
-		if !ok {
-			clr = Color{1, 1, 1, 1}
-		}
-	} else {
-		tex, ok := texs[pth]
-		if !ok {
-			clr = Color{1, 1, 1, 1}
-		} else {
+	clr := Color{1, 1, 1, 1}
+
+	texpath := ply.sa["texture"]
+	if texpath == "" {
+		texpath = geo.sa["texture"]
+	}
+
+	if texpath != "" {
+		tex, ok := texs[texpath]
+		if ok {
 			clr = TextureSample(tex, u, v)
 		}
 	}
 
-	// TODO: Use intersect point's normal instead.
-	N := ply.Normal()
-	if N.Dot(rr.d) > 0 {
-		N = N.Neg()
-	}
+	N := HitNormal(rr, ply, u, v)
 
 	var r, g, b float64
 	for _, l := range lits {
-		dot := maxval(l.dir.Dot(N), 0)
+		dot := maxval(l.dir.Neg().Dot(N), 0)
 		r += l.r * dot
 		g += l.g * dot
 		b += l.b * dot
 	}
-
 	return Color{clr.r * r, clr.g * g, clr.b * b, clr.a}
 }
 

@@ -35,8 +35,8 @@ func Find(in interface{}, keys ...interface{}) interface{} {
 	return in
 }
 
-func loadGeometry() *geometry {
-	b, err := ioutil.ReadFile("geo/rubbertoy.geo")
+func loadGeometry(file string) *geometry {
+	b, err := ioutil.ReadFile(file)
 	if err != nil {
 		fmt.Println("cannot open file")
 	}
@@ -44,6 +44,7 @@ func loadGeometry() *geometry {
 	json.Unmarshal(b, &f)
 
 	poses := make([]vector3, 0)
+	normals := make([]vector3, 0)
 	pointAttrEl := Find(f, "attributes", "pointattributes").([]interface{})
 	for i := range pointAttrEl {
 		if Find(pointAttrEl, i, 0, "name").(string) == "P" {
@@ -55,7 +56,16 @@ func loadGeometry() *geometry {
 				pos := vector3{p0, p1, p2}
 				poses = append(poses, pos)
 			}
-			break
+		}
+		if Find(pointAttrEl, i, 0, "name").(string) == "N" {
+			normalEl := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
+			for _, N := range normalEl {
+				N0 := N.([]interface{})[0].(float64)
+				N1 := N.([]interface{})[1].(float64)
+				N2 := N.([]interface{})[2].(float64)
+				normal := vector3{N0, N1, N2}
+				normals = append(normals, normal)
+			}
 		}
 	}
 
@@ -64,6 +74,9 @@ func loadGeometry() *geometry {
 	for i := range indiceSl {
 		ip := int(indiceSl[i].(float64))
 		v := NewVertex(poses[ip])
+		if len(poses) == len(normals) {
+			v.v3a["N"] = normals[ip]
+		}
 		verts = append(verts, v)
 	}
 

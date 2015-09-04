@@ -30,6 +30,10 @@ func (v *vertex) Transform(m matrix4) {
 		x*m.ca + y*m.cb + z*m.cc + w*m.cd,
 	}
 	v.w = x*m.da + y*m.db + z*m.dc + w*m.dd
+
+	for key, val := range v.v3a {
+		v.v3a[key] = val.MultM4(m)
+	}
 }
 
 type polygon struct {
@@ -51,6 +55,9 @@ func NewPolygon(vts ...*vertex) *polygon {
 func (p *polygon) Transform(m matrix4) {
 	for _, v := range p.vts {
 		v.Transform(m)
+	}
+	for key, val := range p.v3a {
+		p.v3a[key] = val.MultM4(m)
 	}
 }
 
@@ -141,6 +148,9 @@ func NewGeometry(plys ...*polygon) *geometry {
 func (g *geometry) Transform(m matrix4) {
 	for _, p := range g.plys {
 		p.Transform(m)
+	}
+	for key, val := range g.v3a {
+		g.v3a[key] = val.MultM4(m)
 	}
 }
 
