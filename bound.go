@@ -5,7 +5,7 @@ type bbox3 struct {
 	max vector3
 }
 
-func (b bbox3) Add(b2 bbox3) bbox3 {
+func (b bbox3) Union(b2 bbox3) bbox3 {
 	var min, max vector3
 	min.x = minval(b.min.x, b2.min.x)
 	min.y = minval(b.min.y, b2.min.y)

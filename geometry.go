@@ -140,7 +140,7 @@ func NewGeometry(plys ...*polygon) *geometry {
 		g.bb = plys[0].BBox()
 	}
 	for _, p := range plys[1:] {
-		g.bb = g.bb.Add(p.BBox())
+		g.bb = g.bb.Union(p.BBox())
 	}
 	return g
 }
@@ -154,3 +154,13 @@ func (g *geometry) Transform(m matrix4) {
 	}
 }
 
+func (g *geometry) BBox() bbox3 {
+	if len(g.plys) == 0 {
+		panic("cannot check bounding box for geomtry. no polygons in the geomtry")
+	}
+	bb := g.plys[0].BBox()
+	for _, p := range g.plys[1:] {
+		bb = bb.Union(p.BBox())
+	}
+	return bb
+}
