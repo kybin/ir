@@ -29,40 +29,20 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 			if !r.HitBSphere(ply.BBox().BSphere()) {
 				continue
 			}
-			switch len(ply.vts) {
-			case 3:
-				p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[2].P)
-				if !ok {
-					continue
-				}
-				hit = true
-				hitd := r.o.Sub(p).Len()
-				if hitd < dist {
-					dist = hitd
-					clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
-				}
-			case 4:
-				// divide the square to 2 triangles. then we can use above (triangle) approach.
-				// if ray hit any of them, ray hit the quad.
-				p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[3].P)
-				if !ok {
-					p, u, v, ok = r.HitInfo(ply.vts[2].P, ply.vts[3].P, ply.vts[1].P)
-					u, v = 1 - u, 1 - v
-				}
-				if !ok {
-					continue
-				}
-				hit = true
-				hitd := r.o.Sub(p).Len()
-				if hitd < dist {
-					dist = hitd
-					clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
-				}
-			default:
-				panic("n-gon not supported yet.")
+			hitP, u, v, ok := r.HitPolyInfo(ply)
+			if !ok {
+				continue
 			}
+			hit = true
+			hitd := r.o.Sub(hitP).Len()
+			if hitd < dist {
+				dist = hitd
+				clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
+			}
+
 		}
 	}
+	// TODO: return clr, hit
 	if !hit {
 		return Color{}, false
 	}
@@ -71,12 +51,44 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 
 // HitBSphere checks the ray hit the bounding sphere.
 func (r *ray) HitBSphere(bs bsphere) bool {
-		toBs := bs.o.Sub(r.o)
-		dist := toBs.Sub(r.d.Mult(toBs.Dot(r.d))).Len()
-		if dist > bs.r {
-			return false
+	toBs := bs.o.Sub(r.o)
+	dist := toBs.Sub(r.d.Mult(toBs.Dot(r.d))).Len()
+	if dist > bs.r {
+		return false
+	}
+	return true
+}
+
+/*
+func (r *ray) HitBBox(bb bbox) bool {
+	// TODO: gen 12 bbox polygons.
+	for _, p := range polys {
+		_, _, _, ok := r.HitPolyInfo(p)
+		if ok {
+			return true
 		}
-		return true
+	}
+	return false
+}
+*/
+
+func (r *ray) HitPolyInfo(ply *polygon) (p vector3, u, v float64, ok bool) {
+	switch len(ply.vts) {
+	case 3:
+		p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[2].P)
+		return p, u, v, ok
+	case 4:
+		// divide the square to 2 triangles. then we can use above (triangle) approach.
+		// if ray hit any of them, ray hit the quad.
+		p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[3].P)
+		if !ok {
+			p, u, v, ok = r.HitInfo(ply.vts[2].P, ply.vts[3].P, ply.vts[1].P)
+			u, v = 1 - u, 1 - v
+		}
+		return p, u, v, ok
+	default:
+		panic("n-gon not supported yet.")
+	}
 }
 
 // does the ray hit a-b-c polygon?
