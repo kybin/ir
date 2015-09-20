@@ -7,11 +7,14 @@ type octree struct {
 	children [8]*octree
 }
 
-func ParseOctree(bb bbox3, polys []*polygon, depth, maxdepth int) *octree {
+func ParseOctree(bb bbox3, polys []*polygon) *octree {
 	if len(polys) == 0 {
 		return nil
 	}
-	if depth == maxdepth {
+
+	// ray intersect check with bounding box need 12 intersect checking.
+	// it the octree has polygons less than 12, make it `leaf` and don't split it more.
+	if len(polys) <= 12 {
 		var emptyChildren [8]*octree
 		return &octree{
 			bound: bb,
@@ -104,7 +107,7 @@ func ParseOctree(bb bbox3, polys []*polygon, depth, maxdepth int) *octree {
 		children: children,
 	}
 	for i := 0; i < 8; i++ {
-		oct.children[i] = ParseOctree(spaces[i], childPolys[i], depth+1, maxdepth)
+		oct.children[i] = ParseOctree(spaces[i], childPolys[i])
 	}
 	return oct
 }
