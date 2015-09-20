@@ -47,7 +47,7 @@ func main() {
 
 	lit := &dirlight{r:1, g:1, b:1, dir:vector3{-0.5, -1, 0}.Normalize()}
 
-	scn := &scene{cam, []*geometry{geo}, []*dirlight{lit}}
+	scn := NewScene(cam, []*geometry{geo}, []*dirlight{lit})
 
 	texs := loadTextures([]string{"tex/uv.jpg", "tex/uv_gray.jpg"})
 

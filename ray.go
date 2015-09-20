@@ -18,28 +18,25 @@ func NewRay(o, d vector3) *ray {
 
 func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bool) {
 	dist := float64(1000000000)
-	for _, geo := range scn.geos {
-		// ray not hit the bounding sphere means not hit the geometry.
-		bs := geo.bb.BSphere()
-		if !r.HitBSphere(bs) {
-			continue
-		}
+	for i, oct := range scn.octs {
+		leafs := r.HitOctreeLeafs(oct)
 		// inside bounding sphere. check more.
-		for _, ply := range geo.plys {
-			if !r.HitBSphere(ply.BBox().BSphere()) {
-				continue
+		for _, oct := range leafs {
+			for _, ply := range oct.polys {
+				if !r.HitBSphere(ply.BBox().BSphere()) {
+					continue
+				}
+				hitP, u, v, ok := r.HitPolyInfo(ply)
+				if !ok {
+					continue
+				}
+				hit = true
+				hitd := r.o.Sub(hitP).Len()
+				if hitd < dist {
+					dist = hitd
+					clr = HitColor(r, ply, u, v, scn.geos[i], scn.lits, texs)
+				}
 			}
-			hitP, u, v, ok := r.HitPolyInfo(ply)
-			if !ok {
-				continue
-			}
-			hit = true
-			hitd := r.o.Sub(hitP).Len()
-			if hitd < dist {
-				dist = hitd
-				clr = HitColor(r, ply, u, v, geo, scn.lits, texs)
-			}
-
 		}
 	}
 	// TODO: return clr, hit
@@ -59,10 +56,39 @@ func (r *ray) HitBSphere(bs bsphere) bool {
 	return true
 }
 
-/*
-func (r *ray) HitBBox(bb bbox) bool {
-	// TODO: gen 12 bbox polygons.
-	for _, p := range polys {
+// TODO: It is a very heavy function now. make it better.
+func (r *ray) HitBBox(bb bbox3) bool {
+	left, right := bb.min.x, bb.max.x
+	bottom, top := bb.min.y, bb.max.y
+	back, front := bb.min.z, bb.max.z
+
+	leftTopFront := NewVertex(vector3{left, top, front})
+	leftTopBack := NewVertex(vector3{left, top, back})
+	leftBottomFront := NewVertex(vector3{left, bottom, front})
+	leftBottomBack := NewVertex(vector3{left, bottom, back})
+	rightTopFront := NewVertex(vector3{right, top, front})
+	rightTopBack := NewVertex(vector3{right, top, back})
+	rightBottomFront := NewVertex(vector3{right, bottom, front})
+	rightBottomBack := NewVertex(vector3{right, bottom, back})
+
+	// TODO: make it clock / anti-clock wise?
+	topPlane := NewPolygon(leftTopFront, leftTopBack, rightTopBack, rightTopFront)
+	bottomPlane := NewPolygon(leftBottomFront, leftBottomBack, rightBottomBack, rightBottomFront)
+	leftPlane := NewPolygon(leftBottomFront, leftBottomBack, leftTopBack, leftTopFront)
+	rightPlane := NewPolygon(rightBottomFront, rightBottomBack, rightTopBack, rightTopFront)
+	frontPlane := NewPolygon(leftBottomFront, leftTopFront, rightTopFront, rightBottomFront)
+	backPlane := NewPolygon(leftBottomBack, leftTopBack, rightTopBack, rightBottomBack)
+
+	planes := [6]*polygon{
+		topPlane,
+		bottomPlane,
+		leftPlane,
+		rightPlane,
+		frontPlane,
+		backPlane,
+	}
+
+	for _, p := range planes {
 		_, _, _, ok := r.HitPolyInfo(p)
 		if ok {
 			return true
@@ -70,7 +96,29 @@ func (r *ray) HitBBox(bb bbox) bool {
 	}
 	return false
 }
-*/
+
+func (r *ray) HitOctreeLeafs(oct *octree) []*octree {
+	leafs := make([]*octree, 0)
+	if !r.HitBSphere(oct.bound.BSphere()) {
+		return leafs
+	}
+	if !r.HitBBox(oct.bound) {
+		return leafs
+	}
+	for _, child := range oct.children {
+		if child == nil {
+			continue
+		}
+		// hit the octree.
+		if child.leaf {
+			leafs = append(leafs, child)
+		} else {
+			childleafs := r.HitOctreeLeafs(child)
+			leafs = append(leafs, childleafs...)
+		}
+	}
+	return leafs
+}
 
 func (r *ray) HitPolyInfo(ply *polygon) (p vector3, u, v float64, ok bool) {
 	switch len(ply.vts) {
