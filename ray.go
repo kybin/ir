@@ -56,44 +56,64 @@ func (r *ray) HitBSphere(bs bsphere) bool {
 	return true
 }
 
-// TODO: It is a very heavy function now. make it better.
 func (r *ray) HitBBox(bb bbox3) bool {
 	left, right := bb.min.x, bb.max.x
 	bottom, top := bb.min.y, bb.max.y
 	back, front := bb.min.z, bb.max.z
 
-	leftTopFront := NewVertex(vector3{left, top, front})
-	leftTopBack := NewVertex(vector3{left, top, back})
-	leftBottomFront := NewVertex(vector3{left, bottom, front})
-	leftBottomBack := NewVertex(vector3{left, bottom, back})
-	rightTopFront := NewVertex(vector3{right, top, front})
-	rightTopBack := NewVertex(vector3{right, top, back})
-	rightBottomFront := NewVertex(vector3{right, bottom, front})
-	rightBottomBack := NewVertex(vector3{right, bottom, back})
+	leftTopFront := vector3{left, top, front}
+	leftTopBack := vector3{left, top, back}
+	leftBottomFront := vector3{left, bottom, front}
+	leftBottomBack := vector3{left, bottom, back}
+	rightTopFront := vector3{right, top, front}
+	rightTopBack := vector3{right, top, back}
+	rightBottomFront := vector3{right, bottom, front}
+	rightBottomBack := vector3{right, bottom, back}
 
 	// TODO: make it clock / anti-clock wise?
-	topPlane := NewPolygon(leftTopFront, leftTopBack, rightTopBack, rightTopFront)
-	bottomPlane := NewPolygon(leftBottomFront, leftBottomBack, rightBottomBack, rightBottomFront)
-	leftPlane := NewPolygon(leftBottomFront, leftBottomBack, leftTopBack, leftTopFront)
-	rightPlane := NewPolygon(rightBottomFront, rightBottomBack, rightTopBack, rightTopFront)
-	frontPlane := NewPolygon(leftBottomFront, leftTopFront, rightTopFront, rightBottomFront)
-	backPlane := NewPolygon(leftBottomBack, leftTopBack, rightTopBack, rightBottomBack)
-
-	planes := [6]*polygon{
-		topPlane,
-		bottomPlane,
-		leftPlane,
-		rightPlane,
-		frontPlane,
-		backPlane,
+	// topPlane
+	if r.Hit(leftTopFront, leftTopBack, rightTopBack) {
+		return true
+	}
+	if r.Hit(leftTopFront, rightTopBack, rightTopFront) {
+		return true
+	}
+	// bottomPlane
+	if r.Hit(leftBottomFront, leftBottomBack, rightBottomBack) {
+		return true
+	}
+	if r.Hit(leftBottomFront, rightBottomBack, rightBottomFront) {
+		return true
+	}
+	// leftPlane
+	if r.Hit(leftBottomFront, leftBottomBack, leftTopBack) {
+		return true
+	}
+	if r.Hit(leftBottomFront, leftTopBack, leftTopFront) {
+		return true
+	}
+	// rightPlane
+	if r.Hit(rightBottomFront, rightBottomBack, rightTopBack) {
+		return true
+	}
+	if r.Hit(rightBottomFront, rightTopBack, rightTopFront) {
+		return true
+	}
+	// frontPlane
+	if r.Hit(leftBottomFront, leftTopFront, rightTopFront) {
+		return true
+	}
+	if r.Hit(leftBottomFront, rightTopFront, rightBottomFront) {
+		return true
+	}
+	// backPlane
+	if r.Hit(leftBottomBack, leftTopBack, rightTopBack) {
+		return true
+	}
+	if r.Hit(leftBottomBack, rightTopBack, rightBottomBack) {
+		return true
 	}
 
-	for _, p := range planes {
-		_, _, _, ok := r.HitPolyInfo(p)
-		if ok {
-			return true
-		}
-	}
 	return false
 }
 
@@ -137,6 +157,12 @@ func (r *ray) HitPolyInfo(ply *polygon) (p vector3, u, v float64, ok bool) {
 	default:
 		panic("n-gon not supported yet.")
 	}
+}
+
+// TODO: make better version, not use HitInfo.
+func (r *ray) Hit(a, b, c vector3) bool {
+	_, _, _, ok := r.HitInfo(a, b, c)
+	return ok
 }
 
 // does the ray hit a-b-c polygon?
