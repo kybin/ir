@@ -87,12 +87,12 @@ func (p *polygon) Center() vector3 {
 	}
 }
 
-func (p *polygon) BBox() bbox3 {
+func (p *polygon) BBox() bbox {
 	switch len(p.vts) {
 	case 0:
-		return bbox3{vector3{0, 0, 0}, vector3{0, 0, 0}}
+		return bbox{vector3{0, 0, 0}, vector3{0, 0, 0}}
 	case 1:
-		return bbox3{p.vts[0].P, p.vts[0].P}
+		return bbox{p.vts[0].P, p.vts[0].P}
 	default:
 		min := p.vts[0].P
 		max := min
@@ -116,7 +116,7 @@ func (p *polygon) BBox() bbox3 {
 				max.z = z
 			}
 		}
-		return bbox3{min, max}
+		return bbox{min, max}
 	}
 }
 
@@ -126,7 +126,7 @@ type geometry struct {
 	v3a  map[string]vector3
 	fa   map[string]float64
 	sa   map[string]string
-	bb   bbox3
+	bb   bbox
 }
 
 func NewGeometry(plys ...*polygon) *geometry {
@@ -154,7 +154,7 @@ func (g *geometry) Transform(m matrix4) {
 	}
 }
 
-func (g *geometry) BBox() bbox3 {
+func (g *geometry) BBox() bbox {
 	if len(g.plys) == 0 {
 		panic("cannot check bounding box for geomtry. no polygons in the geomtry")
 	}

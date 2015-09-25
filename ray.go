@@ -56,7 +56,7 @@ func (r *ray) HitBSphere(bs bsphere) bool {
 	return true
 }
 
-func (r *ray) HitBBox(bb bbox3) bool {
+func (r *ray) HitBBox(bb bbox) bool {
 	left, right := bb.min.x, bb.max.x
 	bottom, top := bb.min.y, bb.max.y
 	back, front := bb.min.z, bb.max.z

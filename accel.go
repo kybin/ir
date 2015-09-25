@@ -1,13 +1,13 @@
 package main
 
 type octree struct {
-	bound    bbox3
+	bound    bbox
 	leaf     bool
 	polys    []*polygon
 	children [8]*octree
 }
 
-func ParseOctree(bb bbox3, polys []*polygon) *octree {
+func ParseOctree(bb bbox, polys []*polygon) *octree {
 	if len(polys) == 0 {
 		return nil
 	}
@@ -26,23 +26,23 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 
 	center := bb.min.Add(bb.max).Div(2)
 
-	var spaces [8]bbox3
+	var spaces [8]bbox
 	// left, up, front
-	spaces[0] = bbox3{min: vector3{center.x, center.y, center.z}, max: vector3{bb.max.x, bb.max.y, bb.max.z}}
+	spaces[0] = bbox{min: vector3{center.x, center.y, center.z}, max: vector3{bb.max.x, bb.max.y, bb.max.z}}
 	// left, up, back
-	spaces[1] = bbox3{min: vector3{center.x, center.y, bb.min.z}, max: vector3{bb.max.x, bb.max.y, center.z}}
+	spaces[1] = bbox{min: vector3{center.x, center.y, bb.min.z}, max: vector3{bb.max.x, bb.max.y, center.z}}
 	// left, down, front
-	spaces[2] = bbox3{min: vector3{center.x, bb.min.y, center.z}, max: vector3{bb.max.x, center.y, bb.max.z}}
+	spaces[2] = bbox{min: vector3{center.x, bb.min.y, center.z}, max: vector3{bb.max.x, center.y, bb.max.z}}
 	// left, down, back
-	spaces[3] = bbox3{min: vector3{center.x, bb.min.y, bb.min.z}, max: vector3{bb.max.x, center.y, center.z}}
+	spaces[3] = bbox{min: vector3{center.x, bb.min.y, bb.min.z}, max: vector3{bb.max.x, center.y, center.z}}
 	// right, up, front
-	spaces[4] = bbox3{min: vector3{bb.min.x, center.y, center.z}, max: vector3{center.x, bb.max.y, bb.max.z}}
+	spaces[4] = bbox{min: vector3{bb.min.x, center.y, center.z}, max: vector3{center.x, bb.max.y, bb.max.z}}
 	// right, up, back
-	spaces[5] = bbox3{min: vector3{bb.min.x, center.y, bb.min.z}, max: vector3{center.x, bb.max.y, center.z}}
+	spaces[5] = bbox{min: vector3{bb.min.x, center.y, bb.min.z}, max: vector3{center.x, bb.max.y, center.z}}
 	// right, down, front
-	spaces[6] = bbox3{min: vector3{bb.min.x, bb.min.y, center.z}, max: vector3{center.x, center.y, bb.max.z}}
+	spaces[6] = bbox{min: vector3{bb.min.x, bb.min.y, center.z}, max: vector3{center.x, center.y, bb.max.z}}
 	// right, down, back
-	spaces[7] = bbox3{min: vector3{bb.min.x, bb.min.y, bb.min.z}, max: vector3{center.x, center.y, center.z}}
+	spaces[7] = bbox{min: vector3{bb.min.x, bb.min.y, bb.min.z}, max: vector3{center.x, center.y, center.z}}
 
 	// a polygon could live in some part of spaces (at least 1 part). check it.
 	var childPolys [8][]*polygon
