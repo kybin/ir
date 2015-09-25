@@ -9,8 +9,6 @@ import (
 )
 
 func render(scn *scene, texs map[string]image.Image) {
-	// TODO : copy geometry?
-	// TODO : clipping
 	c := scn.cam
 
 	nsample := 1

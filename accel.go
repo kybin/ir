@@ -12,8 +12,8 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 		return nil
 	}
 
-	// ray intersect check with bounding box need 12 intersect checking.
-	// it the octree has polygons less than 12, make it `leaf` and don't split it more.
+	// ray intersect check with bounding box need 64 intersect checking.
+	// it the octree has polygons less than 64, make it `leaf` and don't split it more.
 	if len(polys) <= 64 {
 		var emptyChildren [8]*octree
 		return &octree{
