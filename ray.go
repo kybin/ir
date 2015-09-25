@@ -1,8 +1,8 @@
 package main
 
 import (
-	"math"
 	"image"
+	"math"
 )
 
 type ray struct {
@@ -151,7 +151,7 @@ func (r *ray) HitPolyInfo(ply *polygon) (p vector3, u, v float64, ok bool) {
 		p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[3].P)
 		if !ok {
 			p, u, v, ok = r.HitInfo(ply.vts[2].P, ply.vts[3].P, ply.vts[1].P)
-			u, v = 1 - u, 1 - v
+			u, v = 1-u, 1-v
 		}
 		return p, u, v, ok
 	default:
@@ -184,7 +184,7 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	if aDotN < 0 {
 		return
 	}
-	dPly := r.d.Mult(aDotN/dDotN)
+	dPly := r.d.Mult(aDotN / dDotN)
 	dPlane := dPly.Sub(a)
 	newC := toB.Cross(dPlane).Cross(toB).Normalize()
 	dotC := dPlane.Dot(newC) / toC.Dot(newC)
@@ -196,7 +196,7 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 	if dotB < 0 || dotB > 1 {
 		return
 	}
-	if dotB + dotC > 1 {
+	if dotB+dotC > 1 {
 		return
 	}
 	return dPly.Add(r.o), dotB, dotC, true
@@ -245,4 +245,3 @@ func HitColor(rr *ray, ply *polygon, u, v float64, geo *geometry, lits []*dirlig
 	}
 	return Color{clr.r * r, clr.g * g, clr.b * b, clr.a}
 }
-

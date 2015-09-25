@@ -18,7 +18,7 @@ func (l line2) SlopeIntercept() (float64, float64) {
 
 // caculate two 2d line intersection point.
 func (a line2) Intersect(b line2) bool {
-	if math.Abs(a.end.y - a.start.y) > math.Abs(a.end.x - a.start.x) {
+	if math.Abs(a.end.y-a.start.y) > math.Abs(a.end.x-a.start.x) {
 		a.start.x, a.start.y = a.start.y, a.start.x
 		a.end.x, a.end.y = a.end.y, a.end.x
 		b.start.x, b.start.y = b.start.y, b.start.x
@@ -42,8 +42,8 @@ func (a line2) Intersect(b line2) bool {
 		return false
 	}
 	// find x if y == 0
-	tb := math.Abs(b.start.y) / math.Abs(b.end.y - b.start.y)
-	x := tb * (b.end.x - b.start.x) + b.start.x
+	tb := math.Abs(b.start.y) / math.Abs(b.end.y-b.start.y)
+	x := tb*(b.end.x-b.start.x) + b.start.x
 	if x < a.start.x || a.end.x < x {
 		return false
 	}
@@ -53,7 +53,7 @@ func (a line2) Intersect(b line2) bool {
 // caculate two 2d line intersection point.
 func (a line2) IntersectPoint(b line2) (vector2, bool) {
 	swaped := false
-	if math.Abs(a.end.y - a.start.y) > math.Abs(a.end.x - a.start.x) {
+	if math.Abs(a.end.y-a.start.y) > math.Abs(a.end.x-a.start.x) {
 		swaped = true
 		a.start.x, a.start.y = a.start.y, a.start.x
 		a.end.x, a.end.y = a.end.y, a.end.x
@@ -78,15 +78,14 @@ func (a line2) IntersectPoint(b line2) (vector2, bool) {
 		return vector2{}, false
 	}
 	// find x if y == 0
-	tb := math.Abs(b.start.y) / math.Abs(b.end.y - b.start.y)
-	x := tb * (b.end.x - b.start.x) + b.start.x
+	tb := math.Abs(b.start.y) / math.Abs(b.end.y-b.start.y)
+	x := tb*(b.end.x-b.start.x) + b.start.x
 	if x < a.start.x || a.end.x < x {
 		return vector2{}, false
 	}
-	y := sa * x + ia
+	y := sa*x + ia
 	if swaped {
 		x, y = y, x
 	}
 	return vector2{x, y}, true
 }
-

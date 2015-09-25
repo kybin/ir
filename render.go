@@ -1,11 +1,11 @@
 package main
 
 import (
-	"os"
 	"image"
 	"image/color"
-	"image/png"
 	_ "image/jpeg"
+	"image/png"
+	"os"
 )
 
 func render(scn *scene, texs map[string]image.Image) {
@@ -34,7 +34,7 @@ func render(scn *scene, texs map[string]image.Image) {
 				clr = clr.Add(sc)
 			}
 			clr = clr.Div(float64(nsample))
-			img.Set(px, py, color.RGBA{uint8(255*clr.r), uint8(255*clr.g), uint8(255*clr.b), uint8(255*clr.a)})
+			img.Set(px, py, color.RGBA{uint8(255 * clr.r), uint8(255 * clr.g), uint8(255 * clr.b), uint8(255 * clr.a)})
 		}
 	}
 
@@ -48,5 +48,3 @@ func render(scn *scene, texs map[string]image.Image) {
 		panic("cannot write image")
 	}
 }
-
-

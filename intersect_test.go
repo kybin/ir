@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"math"
+	"testing"
 )
 
 func TestIntersectPoint(t *testing.T) {
@@ -22,7 +22,7 @@ func TestIntersectPoint(t *testing.T) {
 	expect = vector2{0, 0}
 	if !ok {
 		t.Errorf("Intersection of %v and %v is %v, got no intersection.", a, b, expect)
-	} else  if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
+	} else if math.Abs(expect.x-got.x) > ignorable || math.Abs(expect.y-got.y) > ignorable {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
@@ -46,8 +46,8 @@ func TestIntersectPoint(t *testing.T) {
 		t.Errorf("Intersection of %v and %v is %v, got %v instead.", a, b, expect, got)
 	}
 
-	a = line2{vector2{2,1}, vector2{3,3}}
-	b = line2{vector2{2,-1}, vector2{3,-3}}
+	a = line2{vector2{2, 1}, vector2{3, 3}}
+	b = line2{vector2{2, -1}, vector2{3, -3}}
 	got, ok = a.IntersectPoint(b)
 	if ok {
 		t.Errorf("Intersection of %v and %v shold not have itersection. got %v", a, b, got)

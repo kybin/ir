@@ -1,20 +1,20 @@
 package main
 
 type vertex struct {
-	P vector3
-	w float64
+	P   vector3
+	w   float64
 	v3a map[string]vector3
-	fa map[string]float64
-	sa map[string]string
+	fa  map[string]float64
+	sa  map[string]string
 }
 
 func NewVertex(P vector3) *vertex {
 	return &vertex{
-		P: P,
-		w: 1,
+		P:   P,
+		w:   1,
 		v3a: make(map[string]vector3),
-		fa: make(map[string]float64),
-		sa: make(map[string]string),
+		fa:  make(map[string]float64),
+		sa:  make(map[string]string),
 	}
 }
 
@@ -39,16 +39,16 @@ func (v *vertex) Transform(m matrix4) {
 type polygon struct {
 	vts []*vertex
 	v3a map[string]vector3
-	fa map[string]float64
-	sa map[string]string
+	fa  map[string]float64
+	sa  map[string]string
 }
 
 func NewPolygon(vts ...*vertex) *polygon {
 	return &polygon{
 		vts: vts,
 		v3a: make(map[string]vector3),
-		fa: make(map[string]float64),
-		sa: make(map[string]string),
+		fa:  make(map[string]float64),
+		sa:  make(map[string]string),
 	}
 }
 
@@ -123,18 +123,18 @@ func (p *polygon) BBox() bbox3 {
 // TODO : nurbs, curve
 type geometry struct {
 	plys []*polygon
-	v3a map[string]vector3
-	fa map[string]float64
-	sa map[string]string
-	bb bbox3
+	v3a  map[string]vector3
+	fa   map[string]float64
+	sa   map[string]string
+	bb   bbox3
 }
 
 func NewGeometry(plys ...*polygon) *geometry {
 	g := &geometry{
 		plys: plys,
-		v3a: make(map[string]vector3),
-		fa: make(map[string]float64),
-		sa: make(map[string]string),
+		v3a:  make(map[string]vector3),
+		fa:   make(map[string]float64),
+		sa:   make(map[string]string),
 	}
 	if len(plys) > 0 {
 		g.bb = plys[0].BBox()

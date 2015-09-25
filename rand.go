@@ -13,4 +13,3 @@ func rand1D() chan float64 {
 	}()
 	return rng
 }
-

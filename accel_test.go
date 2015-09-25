@@ -3,8 +3,8 @@ package main
 // it's OK to see the result. but I need better design.
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestParseOctree(t *testing.T) {
@@ -20,5 +20,3 @@ func TestParseOctree(t *testing.T) {
 		//fmt.Println(o.bound)
 	}
 }
-
-

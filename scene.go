@@ -1,7 +1,7 @@
 package main
 
 type scene struct {
-	cam *camera
+	cam  *camera
 	geos []*geometry
 	octs []*octree
 	lits []*dirlight
@@ -14,7 +14,7 @@ func NewScene(cam *camera, geos []*geometry, lits []*dirlight) *scene {
 		octs = append(octs, ParseOctree(bb, g.plys))
 	}
 	return &scene{
-		cam: cam,
+		cam:  cam,
 		geos: geos,
 		octs: octs,
 		lits: lits,

@@ -26,4 +26,3 @@ type bsphere struct {
 	o vector3
 	r float64
 }
-

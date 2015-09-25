@@ -1,9 +1,9 @@
 package main
 
 type octree struct {
-	bound bbox3
-	leaf bool
-	polys []*polygon
+	bound    bbox3
+	leaf     bool
+	polys    []*polygon
 	children [8]*octree
 }
 
@@ -17,9 +17,9 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 	if len(polys) <= 64 {
 		var emptyChildren [8]*octree
 		return &octree{
-			bound: bb,
-			leaf: true,
-			polys: polys,
+			bound:    bb,
+			leaf:     true,
+			polys:    polys,
 			children: emptyChildren,
 		}
 	}
@@ -28,21 +28,21 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 
 	var spaces [8]bbox3
 	// left, up, front
-	spaces[0] = bbox3{min:vector3{center.x, center.y, center.z}, max:vector3{bb.max.x, bb.max.y, bb.max.z}}
+	spaces[0] = bbox3{min: vector3{center.x, center.y, center.z}, max: vector3{bb.max.x, bb.max.y, bb.max.z}}
 	// left, up, back
-	spaces[1] = bbox3{min:vector3{center.x, center.y, bb.min.z}, max:vector3{bb.max.x, bb.max.y, center.z}}
+	spaces[1] = bbox3{min: vector3{center.x, center.y, bb.min.z}, max: vector3{bb.max.x, bb.max.y, center.z}}
 	// left, down, front
-	spaces[2] = bbox3{min:vector3{center.x, bb.min.y, center.z}, max:vector3{bb.max.x, center.y, bb.max.z}}
+	spaces[2] = bbox3{min: vector3{center.x, bb.min.y, center.z}, max: vector3{bb.max.x, center.y, bb.max.z}}
 	// left, down, back
-	spaces[3] = bbox3{min:vector3{center.x, bb.min.y, bb.min.z}, max:vector3{bb.max.x, center.y, center.z}}
+	spaces[3] = bbox3{min: vector3{center.x, bb.min.y, bb.min.z}, max: vector3{bb.max.x, center.y, center.z}}
 	// right, up, front
-	spaces[4] = bbox3{min:vector3{bb.min.x, center.y, center.z}, max:vector3{center.x, bb.max.y, bb.max.z}}
+	spaces[4] = bbox3{min: vector3{bb.min.x, center.y, center.z}, max: vector3{center.x, bb.max.y, bb.max.z}}
 	// right, up, back
-	spaces[5] = bbox3{min:vector3{bb.min.x, center.y, bb.min.z}, max:vector3{center.x, bb.max.y, center.z}}
+	spaces[5] = bbox3{min: vector3{bb.min.x, center.y, bb.min.z}, max: vector3{center.x, bb.max.y, center.z}}
 	// right, down, front
-	spaces[6] = bbox3{min:vector3{bb.min.x, bb.min.y, center.z}, max:vector3{center.x, center.y, bb.max.z}}
+	spaces[6] = bbox3{min: vector3{bb.min.x, bb.min.y, center.z}, max: vector3{center.x, center.y, bb.max.z}}
 	// right, down, back
-	spaces[7] = bbox3{min:vector3{bb.min.x, bb.min.y, bb.min.z}, max:vector3{center.x, center.y, center.z}}
+	spaces[7] = bbox3{min: vector3{bb.min.x, bb.min.y, bb.min.z}, max: vector3{center.x, center.y, center.z}}
 
 	// a polygon could live in some part of spaces (at least 1 part). check it.
 	var childPolys [8][]*polygon
@@ -65,7 +65,7 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 			if v.P.y <= center.y {
 				down = true
 			}
-			if v.P.z >=  center.z {
+			if v.P.z >= center.z {
 				front = true
 			}
 			if v.P.z <= center.z {
@@ -101,9 +101,9 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 
 	var children [8]*octree
 	oct := &octree{
-		bound: bb,
-		leaf: false,
-		polys: nil,
+		bound:    bb,
+		leaf:     false,
+		polys:    nil,
 		children: children,
 	}
 	for i := 0; i < 8; i++ {
@@ -111,4 +111,3 @@ func ParseOctree(bb bbox3, polys []*polygon) *octree {
 	}
 	return oct
 }
-

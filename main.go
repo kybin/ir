@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"image"
+	"math"
 )
 
 func main() {
@@ -45,7 +45,7 @@ func main() {
 		far:   10000,
 	}
 
-	lit := &dirlight{r:1, g:1, b:1, dir:vector3{-0.5, -1, 0}.Normalize()}
+	lit := &dirlight{r: 1, g: 1, b: 1, dir: vector3{-0.5, -1, 0}.Normalize()}
 
 	scn := NewScene(cam, []*geometry{geo}, []*dirlight{lit})
 

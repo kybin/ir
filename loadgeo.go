@@ -1,9 +1,9 @@
 package main
 
 import (
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 )
 
 type El map[string]interface{}
@@ -98,4 +98,3 @@ func loadGeometry(file string) *geometry {
 	}
 	return NewGeometry(polys...)
 }
-
