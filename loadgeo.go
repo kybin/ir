@@ -43,39 +43,59 @@ func loadGeometry(file string) *geometry {
 	var f interface{}
 	json.Unmarshal(b, &f)
 
-	poses := make([]vector3, 0)
-	normals := make([]vector3, 0)
+	attrs := make(map[string][]interface{})
+	attrSizes := make(map[string]int)
+	attrTypes := make(map[string]string)
 	pointAttrEl := Find(f, "attributes", "pointattributes").([]interface{})
 	for i := range pointAttrEl {
-		if Find(pointAttrEl, i, 0, "name").(string) == "P" {
-			poseEl := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
-			for _, p := range poseEl {
-				p0 := p.([]interface{})[0].(float64)
-				p1 := p.([]interface{})[1].(float64)
-				p2 := p.([]interface{})[2].(float64)
-				pos := vector3{p0, p1, p2}
-				poses = append(poses, pos)
-			}
-		}
-		if Find(pointAttrEl, i, 0, "name").(string) == "N" {
-			normalEl := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
-			for _, N := range normalEl {
-				N0 := N.([]interface{})[0].(float64)
-				N1 := N.([]interface{})[1].(float64)
-				N2 := N.([]interface{})[2].(float64)
-				normal := vector3{N0, N1, N2}
-				normals = append(normals, normal)
-			}
-		}
+		name := Find(pointAttrEl, i, 0, "name").(string)
+		size := int(Find(pointAttrEl, i, 1, "size").(float64))
+		typ := Find(pointAttrEl, i, 1, "values", "storage").(string)
+		values := Find(pointAttrEl, i, 1, "values", "tuples").([]interface{})
+		attrs[name] = values
+		attrSizes[name] = size
+		attrTypes[name] = typ
 	}
 
 	verts := make([]*vertex, 0)
 	indiceSl := Find(f, "topology", "pointref", "indices").([]interface{})
 	for i := range indiceSl {
-		ip := int(indiceSl[i].(float64))
-		v := NewVertex(poses[ip])
-		if len(poses) == len(normals) {
-			v.v3a["N"] = normals[ip]
+		id := int(indiceSl[i].(float64))
+		attrP := attrs["P"][id].([]interface{})
+		P := vector3{
+			attrP[0].(float64),
+			attrP[1].(float64),
+			attrP[2].(float64),
+		}
+		v := NewVertex(P)
+		for name, values := range attrs {
+			if name == "P" {
+				continue
+			}
+			attr := values[id]
+			typ := attrTypes[name]
+			size := attrSizes[name]
+			if typ == "fpreal32" || typ == "fpreal64" {
+				if size == 1 {
+					v.fa[name] = attr.(float64)
+				} else if size == 2 {
+					attrSlice := attr.([]interface{})
+					x := attrSlice[0].(float64)
+					y := attrSlice[1].(float64)
+					v.v2a[name] = vector2{x, y}
+				} else if size == 3 {
+					attrSlice := attr.([]interface{})
+					x := attrSlice[0].(float64)
+					y := attrSlice[1].(float64)
+					z := attrSlice[2].(float64)
+					v.v3a[name] = vector3{x, y, z}
+				} else {
+					panic("cannot parse if not [1..3]float, yet.")
+				}
+			} else {
+				// TODO: find out string identifier in geo format
+				panic("cannot parse other than float type yet.")
+			}
 		}
 		verts = append(verts, v)
 	}
@@ -98,3 +118,4 @@ func loadGeometry(file string) *geometry {
 	}
 	return NewGeometry(polys...)
 }
+
