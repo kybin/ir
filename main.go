@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"math"
 )
@@ -66,9 +65,3 @@ func loadTextures(pths []string) map[string]image.Image {
 	return texs
 }
 
-func debug(c *camera, g *geometry, l *dirlight) {
-	fmt.Println(*g)
-	for _, p := range g.plys {
-		fmt.Println(p.Normal())
-	}
-}

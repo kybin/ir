@@ -1,6 +1,7 @@
 package main
 
 // it's OK to see the result. but I need better design.
+/*
 
 import (
 	"fmt"
@@ -20,3 +21,4 @@ func TestParseOctree(t *testing.T) {
 		//fmt.Println(o.bound)
 	}
 }
+*/

@@ -7,6 +7,10 @@ type octree struct {
 	children [8]*octree
 }
 
+// TODO:
+//   sometimes it iterates infinitely which cause terminates ir.
+//   expecially when I set n-poly for the leaf is too small. fix it.
+
 func ParseOctree(bb bbox, polys []*polygon) *octree {
 	if len(polys) == 0 {
 		return nil
@@ -14,7 +18,7 @@ func ParseOctree(bb bbox, polys []*polygon) *octree {
 
 	// ray intersect check with bounding box need 64 intersect checking.
 	// it the octree has polygons less than 64, make it `leaf` and don't split it more.
-	if len(polys) <= 64 {
+	if len(polys) <= 32 {
 		var emptyChildren [8]*octree
 		return &octree{
 			bound:    bb,
@@ -46,56 +50,56 @@ func ParseOctree(bb bbox, polys []*polygon) *octree {
 
 	// a polygon could live in some part of spaces (at least 1 part). check it.
 	var childPolys [8][]*polygon
-	for _, p := range polys {
+	for _, ply := range polys {
 		// these variables indicate a polygon is inside where.
-		var left, right bool
-		var up, down bool
-		var front, back bool
+		left, right := false, false
+		up, down := false, false
+		front, back := false, false
 
-		for _, v := range p.vts {
-			if v.P.x >= center.x {
+		for _, pt := range ply.Points() {
+			if pt.P.x >= center.x {
 				left = true
 			}
-			if v.P.x <= center.x {
+			if pt.P.x <= center.x {
 				right = true
 			}
-			if v.P.y >= center.y {
+			if pt.P.y >= center.y {
 				up = true
 			}
-			if v.P.y <= center.y {
+			if pt.P.y <= center.y {
 				down = true
 			}
-			if v.P.z >= center.z {
+			if pt.P.z >= center.z {
 				front = true
 			}
-			if v.P.z <= center.z {
+			if pt.P.z <= center.z {
 				back = true
 			}
 		}
 
 		if left && up && front {
-			childPolys[0] = append(childPolys[0], p)
+			childPolys[0] = append(childPolys[0], ply)
 		}
 		if left && up && back {
-			childPolys[1] = append(childPolys[1], p)
+			childPolys[1] = append(childPolys[1], ply)
 		}
 		if left && down && front {
-			childPolys[2] = append(childPolys[2], p)
+			childPolys[2] = append(childPolys[2], ply)
 		}
 		if left && down && back {
-			childPolys[3] = append(childPolys[3], p)
+			childPolys[3] = append(childPolys[3], ply)
 		}
 		if right && up && front {
-			childPolys[4] = append(childPolys[4], p)
+			childPolys[4] = append(childPolys[4], ply)
 		}
 		if right && up && back {
-			childPolys[5] = append(childPolys[5], p)
+			childPolys[5] = append(childPolys[5], ply)
 		}
 		if right && down && front {
-			childPolys[6] = append(childPolys[6], p)
+			childPolys[6] = append(childPolys[6], ply)
 		}
 		if right && down && back {
-			childPolys[7] = append(childPolys[7], p)
+			childPolys[7] = append(childPolys[7], ply)
 		}
 	}
 

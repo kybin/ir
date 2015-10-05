@@ -141,16 +141,18 @@ func (r *ray) HitOctreeLeafs(oct *octree) []*octree {
 }
 
 func (r *ray) HitPolyInfo(ply *polygon) (p vector3, u, v float64, ok bool) {
-	switch len(ply.vts) {
+	pts := ply.geo.pts
+	vts := ply.Vertices()
+	switch len(vts) {
 	case 3:
-		p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[2].P)
+		p, u, v, ok := r.HitInfo(pts[vts[0].ptid].P, pts[vts[1].ptid].P, pts[vts[2].ptid].P)
 		return p, u, v, ok
 	case 4:
 		// divide the square to 2 triangles. then we can use above (triangle) approach.
 		// if ray hit any of them, ray hit the quad.
-		p, u, v, ok := r.HitInfo(ply.vts[0].P, ply.vts[1].P, ply.vts[3].P)
+		p, u, v, ok := r.HitInfo(pts[vts[0].ptid].P, pts[vts[1].ptid].P, pts[vts[3].ptid].P)
 		if !ok {
-			p, u, v, ok = r.HitInfo(ply.vts[2].P, ply.vts[3].P, ply.vts[1].P)
+			p, u, v, ok = r.HitInfo(pts[vts[2].ptid].P, pts[vts[3].ptid].P, pts[vts[1].ptid].P)
 			u, v = 1-u, 1-v
 		}
 		return p, u, v, ok
@@ -204,15 +206,17 @@ func (r *ray) HitInfo(a, b, c vector3) (p vector3, u, v float64, ok bool) {
 
 // TODO: if N does not exist.
 func HitNormal(r *ray, ply *polygon, u, v float64) vector3 {
-	switch len(ply.vts) {
+	pts := ply.geo.pts
+	vts := ply.Vertices()
+	switch len(vts) {
 	case 3:
 		// find dist from verticies to u,v pos?
 		// (sqrt(2)-distA)/sqrt(2)*attA + (1-distB)*attB + (1-distC)*attC
 		panic("not implemented yet.")
 	case 4:
 		// blend x then y.
-		Na := mixVector3(ply.vts[0].v3a["N"], ply.vts[1].v3a["N"], u)
-		Nb := mixVector3(ply.vts[3].v3a["N"], ply.vts[2].v3a["N"], u)
+		Na := mixVector3(pts[vts[0].ptid].v3a["N"], pts[vts[1].ptid].v3a["N"], u)
+		Nb := mixVector3(pts[vts[3].ptid].v3a["N"], pts[vts[2].ptid].v3a["N"], u)
 		return mixVector3(Na, Nb, v).Normalize()
 	default:
 		panic("n-gon not supported yet.")
