@@ -6,32 +6,36 @@ import (
 	"io/ioutil"
 )
 
-type El map[string]interface{}
-
-func NewEl(in interface{}) El {
-	insl := in.([]interface{})
-	el := make(El)
-	for i := 0; i < len(insl); i += 2 {
-		s := insl[i].(string)
-		el[s] = insl[i+1]
-	}
-	return el
-}
-
+// a key should int or string.
 func Find(in interface{}, keys ...interface{}) interface{} {
 	for _, k := range keys {
+		insl := in.([]interface{})
+
 		i, ok := k.(int)
 		if ok {
-			in = in.([]interface{})[i]
+			in = insl[i]
 			continue
 		}
+
 		s, ok := k.(string)
 		if ok {
-			in = NewEl(in)[s]
+			found := false
+			for i := 0; i < len(insl); i += 2 {
+				if insl[i].(string) != s {
+					continue
+				}
+				found = true
+				in = insl[i+1]
+			}
+			if !found {
+				panic(fmt.Sprintf("key '%s' not found", s))
+			}
 			continue
 		}
-		panic("unknown json key type.")
+
+		panic("unknown key type.")
 	}
+
 	return in
 }
 
