@@ -22,8 +22,11 @@ func (r *ray) Sample(scn *scene, texs map[string]image.Image) (clr Color, hit bo
 		leafs := r.HitOctreeLeafs(oct)
 		// inside bounding sphere. check more.
 		for _, oct := range leafs {
+			if !r.HitBSphere(oct.bound.BSphere()) {
+				continue
+			}
 			for _, ply := range oct.polys {
-				if !r.HitBSphere(ply.BBox().BSphere()) {
+				if !r.HitBSphere(ply.BSphere()) {
 					continue
 				}
 				hitP, u, v, ok := r.HitPolyInfo(ply)

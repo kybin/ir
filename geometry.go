@@ -214,6 +214,30 @@ func (p *polygon) BBox() bbox {
 	}
 }
 
+func (p *polygon) BSphere() bsphere {
+	pts := p.Points()
+	switch len(pts) {
+	case 0:
+		panic("no vetices in polygon")
+	case 1:
+		return bsphere{pts[0].P, 0}
+	default:
+		o := vector3{}
+		for _, pt := range pts {
+			o = o.Add(pt.P)
+		}
+		o = o.Div(float64(len(pts)))
+		var r float64 = 0
+		for _, pt := range pts {
+			rr := o.Sub(pt.P).Len()
+			if rr > r {
+				r = rr
+			}
+		}
+		return bsphere{o, r}
+	}
+}
+
 // TODO : nurbs, curve
 type geometry struct {
 	pts  []*point

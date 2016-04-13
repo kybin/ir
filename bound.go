@@ -22,6 +22,12 @@ func (b bbox) BSphere() bsphere {
 	return bsphere{o, r}
 }
 
+func (b bbox) InnerBSphere() bsphere {
+	o := b.min.Add(b.max).Div(2)
+	r := minval(minval(o.x, o.y), o.z)
+	return bsphere{o, r}
+}
+
 type bsphere struct {
 	o vector3
 	r float64
