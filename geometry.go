@@ -92,22 +92,22 @@ func (v *vertex) SetVectorAttr(name string, xs ...float64) {
 }
 
 type polygon struct {
-	geo *geometry
+	geo   *geometry
 	vtids []int
-	v2a map[string]vector2
-	v3a map[string]vector3
-	fa  map[string]float64
-	sa  map[string]string
+	v2a   map[string]vector2
+	v3a   map[string]vector3
+	fa    map[string]float64
+	sa    map[string]string
 }
 
 func NewPolygon(vtids []int) *polygon {
 	return &polygon{
-		geo: nil, // will be set in NewGeometry()
+		geo:   nil, // will be set in NewGeometry()
 		vtids: vtids,
-		v2a: make(map[string]vector2),
-		v3a: make(map[string]vector3),
-		fa:  make(map[string]float64),
-		sa:  make(map[string]string),
+		v2a:   make(map[string]vector2),
+		v3a:   make(map[string]vector3),
+		fa:    make(map[string]float64),
+		sa:    make(map[string]string),
 	}
 }
 
@@ -228,8 +228,8 @@ type geometry struct {
 
 func NewGeometry(pts []*point, vts []*vertex, plys []*polygon) *geometry {
 	g := &geometry{
-		pts: pts,
-		vts: vts,
+		pts:  pts,
+		vts:  vts,
 		plys: plys,
 		v2a:  make(map[string]vector2),
 		v3a:  make(map[string]vector3),

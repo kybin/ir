@@ -44,6 +44,7 @@ type attr struct {
 	typ    string
 	values []interface{}
 }
+
 // TODO: create attr methods.
 
 func attributes(rootEl interface{}, key string) map[string]attr {
@@ -150,4 +151,3 @@ func loadGeometry(file string) *geometry {
 	}
 	return NewGeometry(pts, vts, polys)
 }
-

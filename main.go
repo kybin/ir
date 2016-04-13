@@ -64,4 +64,3 @@ func loadTextures(pths []string) map[string]image.Image {
 	}
 	return texs
 }
-
